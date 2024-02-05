@@ -1,0 +1,32 @@
+<?php $this->layout('page'); ?>
+
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table"></table>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mTable'], function () {
+        const mTable = layui.mTable
+        // 渲染表格
+        mTable.render({
+            elem: '#table',
+            url: "<?=$this->url('/sys/dev/crontab/log')?>" + '?isApi=1&crontab_id=' + "<?=$crontab_id?>",
+            cols: [[
+                { title: 'ID', field: 'id', width: 80, align: 'center' },
+                { title: '运行结果', field: 'return_code', width: 100, align: 'center', templet: d => mTable.format.status(d.return_code, ['失败', '成功']) },
+                { title: '运行耗时', field: 'running_time', width: 100, align: 'center', templet: d => d.running_time + 's' },
+                { title: '执行时间', field: 'create_time', width: 160, align: 'center', templet: d => mTable.format.dateTime(d.create_time) },
+                { title: '调度目标', field: 'target', minWidth: 200, align: 'left' },
+                { title: '结果输出', field: 'result', minWidth: 200, align: 'left' },
+            ]]
+        })
+        // 绑定表格事件
+        mTable.bindEvent('table')
+    })
+</script>
+<?php $this->blockEnd(); ?>

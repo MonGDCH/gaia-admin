@@ -1,0 +1,164 @@
+<?php $this->layout('page'); ?>
+
+<?php $this->block('css'); ?>
+<link rel="stylesheet" href="<?=$this->assets('static/css/profile.css')?>" />
+<?php $this->blockEnd(); ?>
+
+
+<div class="sub-menu-container" id="app">
+    <div class="sub-menu">
+        <div class="sub-menu-item" v-for="(item, index) in menuList">
+            <a href="javascript:;" :class="[index == menu ? 'active' : '']" @click="menu = index">
+                <i :class="['sub-menu-icon', 'layui-icon', item.icon]"></i>
+                <span v-text="item.title"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="sub-menu-main">
+        <div class="sub-menu-main-content">
+            <div class="sub-menu-main-title">{{item.title}}</div>
+            <div class="profile-basic" v-show="menu == 0">
+                <!-- 用户信息 -->
+                <div class="userinfo">
+                    <form class="layui-form" lay-filter="userinfo">
+                        <div class="set-pannel">
+                            <div class="form-item">
+                                <label>用户名：</label>
+                                <div class="form-item-text">
+                                    <?= $userInfo['username'] ?>
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <label>账号有效期：</label>
+                                <div class="form-item-text layui-font-blue">
+                                    <?= $userInfo['deadline'] > 0 ? date('Y-m-d', $userInfo['deadline']) : '长期' ?>
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <label>私信：</label>
+                                <div class="form-item-text layui-font-blue">
+                                    <?=$this->build_checkbox('receiver', '1', '接收私信', $userInfo['receiver'] == 1)?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label></label>
+                            <button type="button" class="layui-btn layui-btn-success" id="submit-btn"
+                                @click="saveUserInfo">
+                                <i class="layui-icon layui-icon-file"></i>
+                                确认提交
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- 用户头像 -->
+                <div class="avatar">
+                    <img src="<?=$this->get('userInfo.avatar') ?>" class="img-circle avatar-img layui-border-cyan"
+                        id="user-avatar">
+                    <div class="avatar-change">
+                        <button type="button" class="layui-btn layui-btn-primary layui-border" @click="changeAvatar">
+                            <i class="layui-icon layui-icon-upload-drag"></i>
+                            更换头像
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="class-prorfie-safe" v-show="menu == 1">
+                <div class="safe-item">
+                    <div class="safe-item-left">
+                        <div class="safe-item-title">账户密码</div>
+                        <div class="safe-item-desc">管理端用户登录密码</div>
+                    </div>
+                    <div class="safe-item-right">
+                        <a href="javascript:;" class="mon-link" @click="changePWD">修改</a>
+                    </div>
+                </div>
+                <div class="safe-item">
+                    <div class="safe-item-left">
+                        <div class="safe-item-title">二级密码</div>
+                        <div class="safe-item-desc">无效设置二级密码</div>
+                    </div>
+                    <div class="safe-item-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<?php $this->block('js'); ?>
+<script src="<?=$this->assets('static/component/vue/vue.v3.js') ?>"></script>
+<script>
+    layui.use(['action', 'form', 'http', 'button'], function () {
+        const action = layui.action
+        const form = layui.form
+        const http = layui.http
+        const button = layui.button
+
+        const { createApp, ref, onMounted, computed } = Vue
+        createApp({
+            setup() {
+                // 请求标志位
+                let loading = false
+                // 菜单列表
+                const menuList = [
+                    { title: '基本设置', icon: 'layui-icon-username' },
+                    { title: '安全设置', icon: 'layui-icon-set-sm' },
+                ]
+                // 当前选中的菜单节点索引
+                const menu = ref(0)
+                // 当前选中菜单节点信息
+                const item = computed(() => menuList[menu.value])
+                // 初始化
+                onMounted(() => {
+                    form.render()
+                })
+
+                // 保存用户信息
+                function saveUserInfo() {
+                    if (loading) {
+                        return false
+                    }
+                    loading = true;
+                    let btn = button.load({ elem: '#submit-btn' })
+
+                    const baseData = { receiver: 0 }
+                    const formData = form.val('userinfo')
+                    const data = { ...baseData, ...formData }
+
+                    // 表单提交
+                    http.ajax({
+                        url: "<?=$this->url('/profile/editInfo')?>",
+                        method: 'POST',
+                        data: data,
+                    }).then(ret => {
+                        layer.msg(ret.msg, { icon: ret.code == 1 ? 1 : 2 })
+                    }).finally(() => {
+                        // 防刷
+                        setTimeout(() => {
+                            btn.stop();
+                            loading = false;
+                        }, 200);
+                    })
+                }
+
+                // 更换头像
+                function changeAvatar() {
+                    action.dialog("<?= $this->url('/profile/avatar') ?>", '更换头像', {
+                        area: ["900px", "500px"]
+                    })
+                }
+
+                // 修改密码
+                function changePWD() {
+                    action.dialog("<?= $this->url('/profile/password') ?>", '修改密码')
+                }
+
+                return { menuList, menu, item, saveUserInfo, changeAvatar, changePWD }
+            }
+        }).mount('#app')
+    })
+</script>
+<?php $this->blockEnd(); ?>

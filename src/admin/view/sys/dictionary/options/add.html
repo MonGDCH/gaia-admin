@@ -1,0 +1,76 @@
+<?php $this->layout('page'); ?>
+
+<div class="layui-card page-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <input type="hidden" name="group" value="<?=$group?>">
+            <?php if($isDictionary): ?>
+            <div class="layui-form-item">
+                <label class="layui-form-label">字典名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="required" lay-verType="tips" lay-reqText="请输入字典名称"
+                        placeholder="请输入字典名称" class="layui-input">
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="layui-form-item">
+                <label class="layui-form-label">索引标签</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="index" lay-verify="required|index" lay-verType="tips"
+                        lay-reqText="请输入字典索引标签" placeholder="请输入字典索引标签" class="layui-input">
+                </div>
+            </div>
+            <?php if(!$isDictionary): ?>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" type="text" name="value" placeholder="请输入字典索引标签内容">
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" name="remark" maxlength="250" placeholder="备注信息"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <?= $this->build_radios('status', $status, key($status), [], true); ?>
+                </div>
+            </div>
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mForm'], function () {
+        const mForm = layui.mForm
+
+        // 自定义验证规则
+        mForm.callback((form) => {
+            form.verify({
+                index: function (value, el) {
+                    if (!new RegExp('^[a-zA-Z0-9_-]+$').test(value)) {
+                        return '索引只能由字母、数字、下划线、中划线组成';
+                    }
+                }
+            })
+        })
+
+        // 渲染表单
+        mForm.render()
+        mForm.submit('submit')
+    })
+</script>
+<?php $this->blockEnd(); ?>

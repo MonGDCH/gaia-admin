@@ -1,0 +1,290 @@
+<?php $this->layout('page'); ?>
+
+<?php $this->block('css'); ?>
+<link rel="stylesheet" href="<?=$this->assets('static/css/console.css') ?>" />
+<?php $this->blockEnd(); ?>
+
+<?php if($userInfo['deadline'] > 0 && $userInfo['deadline'] - time() < (86400 * 14)): ?>
+<!-- 到期提示 -->
+<div class="alert alert-warning">
+    <div class="alert-msg">
+        您的账号有效期将于<span class="layui-font-red"> <?=date('Y-m-d', $userInfo['deadline'])?> </span>到期，请及时联系管理员进行续期。
+    </div>
+    <div class="alert-close" lay-on="closeAlert"><i class="layui-icon-close layui-icon"></i></div>
+</div>
+<?php endif; ?>
+
+<div class="layui-row layui-col-space10">
+    <div class="layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-body user-info">
+                <div class="text-center layui-text">
+                    <div class="user-info-head layui-border-cyan">
+                        <img src="<?=$this->get('userInfo.avatar') ?>" width="120px" height="120px">
+                    </div>
+                    <h2 class="username">
+                        <?= $this->get('userInfo.username') ?>
+                    </h2>
+                    <div class="desc" id="welcome">今日事 ，今日毕</div>
+                </div>
+            </div>
+        </div>
+        <!-- 快捷菜单 -->
+        <div class="layui-card" id="fast-menu">
+            <div class="layui-card-header">快捷菜单</div>
+            <div class="layui-card-body">
+                <div class="layui-row layui-col-space20" id="fast-list"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 日志 -->
+    <div class="layui-col-md9">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-card">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">登录日志</li>
+                    <li>操作日志</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table id="login-log" lay-filter="login-log"></table>
+                    </div>
+                    <div class="layui-tab-item">
+                        <table id="operate-log" lay-filter="operate-log"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="login-toolbar">
+    <div class="layui-input-inline">
+        <input type="text" name="create_time" id="login-log-time" placeholder="搜索登录时间" class="layui-input">
+    </div>
+</script>
+
+<script type="text/html" id="operate-toolbar">
+    <div class="layui-input-inline">
+        <input type="text" name="create_time" id="operate-log-time" placeholder="搜索操作时间" class="layui-input">
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['element', 'mTable', 'common', 'cascader', 'http', 'laydate', 'util'], function () {
+        const mTable = layui.mTable
+        const common = layui.common
+        const cascader = layui.cascader
+        const http = layui.http
+        const laydate = layui.laydate
+        const util = layui.util
+
+        util.on('lay-on', {
+            // 关闭alert提示
+            closeAlert: function () {
+                if (this.parentNode) {
+                    this.parentNode.classList.add('layui-anim', 'layui-anim-fadeout')
+                    setTimeout(() => {
+                        this.parentNode.remove()
+                    }, 360);
+                }
+            },
+            // 打开快捷菜单
+            fastOpen: function () {
+                const data = this.dataset
+                if (!data.type || data.type == '0' && (parent.layui && parent.layui.admin)) {
+                    parent.layui.admin.addTab(data.id || '', data.title || '快捷页面', data.url || '')
+                } else {
+                    util.openWin({ url: data.url })
+                }
+            },
+            // 添加快捷菜单
+            addFast: async function () {
+                const data = await http.ajax({ url: '<?=$this->url("/nav")?>' })
+                let fastMenuAdd;
+                // 添加弹窗
+                layer.open({
+                    type: 1,
+                    title: '添加快捷菜单',
+                    shadeClose: true,
+                    scrollbar: false,
+                    area: ['540px', '200px'],
+                    offset: '64px',
+                    btn: ['确定', '取消'],
+                    content: '<div style="padding: 12px 24px"><input type="text" id="fast-menu-add-input" /></div>',
+                    success: function (layero, index) {
+                        fastMenuAdd = cascader({
+                            elem: '#fast-menu-add-input',
+                            options: data,
+                            props: {
+                                value: 'id',
+                                label: 'title'
+                            }
+                        });
+                    },
+                    btn1: async function (index, layero, that) {
+                        let value = fastMenuAdd.getCheckedValues()
+                        const ret = await http.ajax({
+                            url: "<?= $this->url('/addFastMenu') ?>",
+                            method: 'post',
+                            data: { menu: value }
+                        })
+                        if (ret.code != 1) {
+                            layer.msg(ret.msg, { icon: 2 })
+                            return false;
+                        }
+
+                        layer.msg('操作成功', { icon: 1 })
+                        await renderFastMenu()
+                        layer.close(index)
+                    }
+                })
+            },
+            // 删除快捷菜单
+            removeFast: async function () {
+                const data = this.dataset
+                layer.confirm(`确认删除快捷菜单【${data.title}】么？`, { icon: 3, title: 'Tips' }, async function (index) {
+                    // 删除
+                    const ret = await http.ajax({
+                        url: "<?=$this->url('/delFastMenu')?>",
+                        method: 'post',
+                        data: { menu: data.id }
+                    })
+                    if (ret.code != 1) {
+                        layer.msg(ret.msg, { icon: 2 })
+                        return false;
+                    }
+
+                    layer.msg('操作成功', { icon: 1 })
+                    await renderFastMenu()
+                    layer.close(index)
+                })
+            }
+        })
+
+        // 欢迎
+        function welcome() {
+            const now = common.date('Y-m-d H:i')
+            const hour = common.date('H')
+            let welcome = '欢迎'
+            if (hour > 19) {
+                welcome = '晚上好';
+            } else if (hour > 13) {
+                welcome = '下午好'
+            } else if (hour > 10) {
+                welcome = '中午好'
+            } else if (hour > 6) {
+                welcome = '早上好'
+            } else {
+                welcome = '晚安'
+            }
+            document.querySelector('#welcome').innerHTML = now + ' ' + welcome
+        }
+        welcome()
+
+        // 渲染快捷菜单
+        async function renderFastMenu() {
+            const { data } = await http.ajax({ url: "<?= $this->url('/console') ?>" + '?isApi=1' });
+            let html = []
+            data.forEach(item => {
+                html.push(` <div class="layui-col-md3 text-center layui-col-sm3 layui-col-xs3 fast-menu-item" title="${item.title}">
+                                <div class="pear-card fast-item" lay-on="fastOpen" data-id="${item.id}" data-title="${item.title}" data-url="${item.href}" data-type="${item.openType}">
+                                    <i class="layui-icon ${item.icon}"></i>
+                                </div>
+                                <div class="fast-menu-close" data-id="${item.id}" data-title="${item.title}" lay-on="removeFast">
+                                    <i class="layui-icon layui-icon-close-fill"></i>
+                                </div>
+                                <span class="pear-card-title fast-menu-item-title">${item.title}</span>
+                            </div>`)
+            })
+            html.push(` <div class="layui-col-md3 text-center layui-col-sm3 layui-col-xs3 fast-menu-item" lay-on="addFast">
+                            <div class="pear-card"><i class="layui-icon layui-icon-add-circle"></i></div>
+                            <span class="pear-card-title fast-menu-item-title">添加菜单</span>
+                        </div>`)
+
+            document.querySelector('#fast-list').innerHTML = html.join('')
+        }
+        renderFastMenu()
+
+        // 加载日志
+        mTable.render({
+            id: 'operate-log',
+            elem: '#operate-log',
+            url: "<?= $this->url('/profile/operLog') ?>?isApi=1",
+            toolbar: '#operate-toolbar',
+            cols: [[
+                { title: '模块', field: 'module', width: 80, align: 'center' },
+                { title: '操作时间', field: 'create_time', width: 168, align: 'center', templet: d => common.date('Y-m-d H:i:s', d.create_time) },
+                { title: '操作', field: 'action', width: 160, align: 'left' },
+                { title: '操作内容', field: 'content', minWidth: 300, align: 'left' },
+                { title: '浏览器', field: 'ua', minWidth: 200, align: 'left' },
+                { title: '操作地址', field: 'ip', width: 136, align: 'center' },
+            ]],
+            done: function (res, curr, count) {
+                laydate.render({
+                    elem: '#operate-log-time',
+                    type: 'date',
+                    range: true,
+                    rangeLinked: true,
+                    fullPanel: true,
+                    format: 'yyyy-MM-dd',
+                    done: function (value, date, endDate) {
+                        let data = {}
+                        if (value) {
+                            let iLogin_time = value.split(' - ')
+                            data.start_time = common.strtotime(iLogin_time[0] + ' 00:00:00')
+                            data.end_time = common.strtotime(iLogin_time[1] + ' 23:59:59')
+                        }
+
+                        mTable.reloadData('operate-log', {
+                            page: { curr: 1, },
+                            where: data
+                        })
+                    }
+                })
+            }
+
+        })
+        mTable.bindEvent('operate-log')
+
+        // 登录日志
+        mTable.render({
+            id: 'login-log',
+            elem: '#login-log',
+            url: "<?= $this->url('/profile/loginLog') ?>?isApi=1",
+            toolbar: '#login-toolbar',
+            cols: [[
+                { title: '操作时间', field: 'create_time', width: 168, align: 'center', templet: d => common.date('Y-m-d H:i:s', d.create_time) },
+                { title: '操作', field: 'action', width: 160, align: 'left' },
+                { title: '浏览器', field: 'ua', minWidth: 200, align: 'left' },
+                { title: '操作地址', field: 'ip', width: 136, align: 'center' },
+            ]],
+            done: function (res, curr, count) {
+                laydate.render({
+                    elem: '#login-log-time',
+                    type: 'date',
+                    range: true,
+                    rangeLinked: true,
+                    fullPanel: true,
+                    format: 'yyyy-MM-dd',
+                    done: function (value, date, endDate) {
+                        let data = {}
+                        if (value) {
+                            let iLogin_time = value.split(' - ')
+                            data.start_time = common.strtotime(iLogin_time[0] + ' 00:00:00')
+                            data.end_time = common.strtotime(iLogin_time[1] + ' 23:59:59')
+                        }
+
+                        mTable.reloadData('login-log', {
+                            page: { curr: 1, },
+                            where: data
+                        })
+                    }
+                })
+            }
+        })
+        mTable.bindEvent('login-log')
+    });
+</script>
+<?php $this->blockEnd(); ?>

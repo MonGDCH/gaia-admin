@@ -1,0 +1,208 @@
+<?php $this->layout('page'); ?>
+
+<div class="sub-menu-container">
+    <!-- 组别选择 -->
+    <div class="sub-menu" style="width: 300px; min-width: 300px;">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="text-center mr-tb-xs">
+                    <button class="hidden" id="btn-refresh-group" title="刷新"></button>
+                    <?php if($this->checkAuth('/admin/sys/auth/group/add', $uid)): ?>
+                    <button class="layui-btn layui-btn-sm layui-btn-success" id="btn-add-group">
+                        <i class="layui-icon layui-icon-add-1"></i> 新增角色组别
+                    </button>
+                    <?php endif; ?>
+                </div>
+                <input type="hidden" id="selectGroupID">
+                <div id="groupTree" class="mr-xs mr-lr-md">加载角色组别数据中...</div>
+            </div>
+            <div style="height: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- 组别信息 -->
+    <div class="sub-menu-main">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                当前组别：<strong id="selectGroup">未选择</strong><small id="groupStatus"></small>
+            </div>
+            <div class="layui-card-body m-card-body">
+                <table id="table" lay-filter="table" style="margin-top: -20px;"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作栏 -->
+<div class="hidden" type="text/html" id="toolbar">
+    <?php if($this->checkAuth('/sys/auth/group/edit', $uid)): ?>
+    <button class="layui-btn layui-btn-sm layui-btn-normal btn-edit" lay-event="editGroup">
+        <i class="layui-icon layui-icon-edit"></i>编辑
+    </button>
+    <?php endif; ?>
+    <?php if($this->checkAuth('/sys/auth/group/bind', $uid)): ?>
+    <button class="layui-btn layui-btn-sm btn-bind" lay-event="bind">
+        <i class="layui-icon layui-icon-add-1"></i>
+        关联用户
+    </button>
+    <?php endif; ?>
+</div>
+
+<!-- 操作 -->
+<script type="text/html" id="operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/auth/group/unbind', $uid)): ?>
+            <!-- {{# if(!supper_group.includes(d.id + '')){ }} -->
+            <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="confirm"
+                data-title="确认移除该关联用户么？"
+                data-idx="{{d.id}}"
+                data-gid="{{d.group_id}}"
+                data-url="<?=$this->url('/sys/auth/group/unbind')?>"
+            >
+                <i class="layui-icon layui-icon-senior"></i>
+                移除关联
+            </button>
+            <!-- {{# } }} -->
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    // 超级管理员组别
+    const supper_group = "<?=$group?>".split(',')
+    layui.use(['tree', 'http', 'mTable', 'action'], function () {
+        const tree = layui.tree
+        const http = layui.http
+        const mTable = layui.mTable
+        const action = layui.action
+        // 先隐藏操作按钮
+        document.querySelectorAll('#toolbar .btn-refresh, #toolbar .btn-bind, #toolbar .btn-edit').forEach(item => {
+            item.style.display = 'none'
+        })
+        // 加载组别树
+        renderLayTree()
+        // 加载组别用户表格
+        renderUserTable();
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            toolbar: {
+                // 编辑
+                editGroup: function (data, table) {
+                    let idx = this.dataset.idx
+                    if (!idx) {
+                        layer.msg('请选择组别后再进行编辑', { icon: 2 });
+                        return;
+                    }
+
+                    action.drawer("<?=$this->url('/sys/auth/group/edit')?>" + '?idx=' + idx, '编辑角色组别')
+                },
+                // 关联用户
+                bind: function (data, table) {
+                    let idx = this.dataset.idx
+                    if (!idx) {
+                        layer.msg('请选择组别后再进行关联', { icon: 2 });
+                        return;
+                    }
+
+                    action.dialog("<?=$this->url('/sys/auth/group/bind')?>" + '?idx=' + idx, '关联管理员用户', { area: ['528px', '500px'] })
+                },
+            }
+        })
+
+        // 新增组别
+        document.querySelector('#btn-add-group').addEventListener('click', function () {
+            action.dialog("<?=$this->url('/sys/auth/group/add')?>", '新增组别')
+        })
+
+        // 渲染layui树
+        window.renderLayTreeFun = renderLayTree
+        function renderLayTree(reload) {
+            http.ajax({ url: "<?=$this->url('/sys/auth/group')?>?isApi=1" }).then(ret => {
+                if (ret.code != '1') {
+                    parent.toast.error(ret.msg);
+                    return;
+                }
+                let data = ret.data.map(item => {
+                    item.spread = true
+                    return item
+                })
+                if (reload) {
+                    tree.reload('groupTree', {
+                        data: data
+                    })
+                } else {
+                    // 渲染
+                    tree.render({
+                        id: 'groupTree',
+                        elem: '#groupTree',
+                        data: data,
+                        onlyIconControl: true,
+                        text: {
+                            defaultNodeName: '未命名',
+                            none: '无数据'
+                        },
+                        click: function (obj) {
+                            let field = obj.data
+                            // 渲染选择组别
+                            document.querySelector('#selectGroupID').value = field.id
+                            document.querySelector('#selectGroup').innerHTML = field.title
+                            document.querySelector('#groupStatus').innerHTML = field.status == '1' ? '<apsn class="layui-font-green">（正常）</span>' : '<apsn class="layui-font-red">（禁用）</span>'
+                            // 判断可否编辑，进行渲染
+                            const doms = document.querySelectorAll('#toolbar .btn-refresh, #toolbar .btn-bind, #toolbar .btn-edit')
+                            if (!supper_group.includes(field.id + '')) {
+                                // 渲染操作项目
+                                doms.forEach(item => {
+                                    item.dataset.idx = field.id
+                                    item.style.display = 'inline-block'
+                                })
+                            } else {
+                                doms.forEach(item => {
+                                    item.dataset.idx = null
+                                    item.style.display = 'none'
+                                })
+                                if (document.querySelector('#toolbar .btn-refresh')) {
+                                    document.querySelector('#toolbar .btn-refresh').style.display = 'inline-block'
+                                }
+                            }
+                            // 渲染角色组别用户
+                            renderUserTable(field.id, true);
+                        }
+                    });
+                }
+            })
+        }
+
+        // 渲染组别用户
+        function renderUserTable(idx, reload) {
+            let url = "<?=$this->url('/sys/auth/group/user')?>" + '?isApi=1' + (idx ? '&gid=' + idx : '');
+            if (reload) {
+                mTable.reload('table', {
+                    url: url,
+                    page: {
+                        curr: 1,
+                    },
+                })
+            } else {
+                // 渲染角色用户
+                mTable.render({
+                    elem: '#table',
+                    url: url,
+                    text: {
+                        none: '无数据或请先选择组别',
+                    },
+                    cols: [[
+                        { field: 'id', title: 'ID', width: 80, align: 'center' },
+                        { field: 'username', title: '用户名', minWidth: 120 },
+                        { field: 'avatar', title: '头像', width: 80, align: 'center', templet: function (d) { return mTable.format.avatar(d.avatar) } },
+                        { field: 'login_ip', title: '登录IP', width: 140, align: 'center' },
+                        { field: 'login_time', title: '最后登录时间', width: 168, align: 'center', templet: function (d) { return d.login_time ? mTable.format.dateTime(d.login_time) : ''; }, sort: true },
+                        { field: 'status', title: '状态', width: 100, templet: function (d) { return mTable.format.status(d.status) }, align: 'center' },
+                        { field: 'operate', title: '操作', templet: '#operate', minWidth: 120 }
+                    ]]
+                });
+            }
+        }
+    })
+</script>
+<?php $this->blockEnd(); ?>

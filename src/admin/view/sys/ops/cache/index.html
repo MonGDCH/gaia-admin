@@ -1,0 +1,116 @@
+<?php $this->layout('page'); ?>
+
+<style>
+    .line {
+        margin-bottom: 10px;
+    }
+
+    .line .layui-text {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="layui-card">
+    <div class="layui-card-header">缓存管理</div>
+    <div class="layui-card-body">
+        <div class="layui-row line">
+            <div class="oper-btn">
+                <button type="button" id="read" class="layui-btn layui-bg-blue layui-btn-sm">查看缓存信息</button>
+            </div>
+            <div class="layui-text">
+                <p>查看指定缓存信息</p>
+            </div>
+        </div>
+
+        <?php if($this->checkAuth('/sys/ops/cache/clear', $uid)): ?>
+        <div class="layui-row line">
+            <div class="oper-btn">
+                <button type="button" id="clear" class="layui-btn layui-bg-orange layui-btn-sm">清除指定缓存</button>
+            </div>
+            <div class="layui-text">
+                <p>清除指定缓存信息</p>
+            </div>
+        </div>
+        <div class="layui-row line">
+            <div class="oper-btn">
+                <button type="button" id="clearAll" class="layui-btn layui-bg-red layui-btn-sm">清除所有缓存</button>
+            </div>
+            <div class="layui-text">
+                <p>清除所有缓存信息，请谨慎操作</p>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['http'], function () {
+        const http = layui.http
+
+        // 清除缓存
+        document.querySelector('#clearAll').addEventListener('click', function (e) {
+            layer.confirm('确定要清除所有缓存么？', { icon: 3, title: '注意' }, async (index) => {
+                layer.close(index)
+                const ret = await http.ajax({
+                    method: 'post',
+                    url: "<?=$this->url('/sys/ops/cache/clear')?>"
+                })
+                if (ret.code != '1') {
+                    layer.msg(ret.msg, { icon: 2 });
+                    return;
+                }
+                layer.msg(ret.msg, { icon: 1 })
+                // toast.success(ret.msg);
+            });
+        })
+        document.querySelector('#clear').addEventListener('click', function (e) {
+            layer.prompt({ title: '请输入要清除的缓存键名' }, async (value, index, elem) => {
+                if (value === '') {
+                    return elem.focus();
+                }
+                layer.close(index);
+                const ret = await http.ajax({
+                    method: 'post',
+                    url: "<?=$this->url('/sys/ops/cache/clear')?>",
+                    data: {
+                        key: value
+                    }
+                })
+                if (ret.code != '1') {
+                    layer.msg(ret.msg, { icon: 2 });
+                    return;
+                }
+                layer.msg(ret.msg, { icon: 1 })
+                // toast.success(ret.msg);
+            });
+        })
+
+        // 查看缓存
+        document.querySelector('#read').addEventListener('click', function (e) {
+            layer.prompt({ title: '请输入要查看的缓存键名' }, async (value, index, elem) => {
+                if (value === '') {
+                    return elem.focus();
+                }
+                layer.close(index);
+                const ret = await http.ajax({
+                    method: 'post',
+                    url: "<?=$this->url('/sys/ops/cache')?>",
+                    data: {
+                        key: value
+                    }
+                })
+                if (ret.code != '1') {
+                    layer.msg(ret.msg, { icon: 2 });
+                    return;
+                }
+
+                layer.alert(ret.data.value || '', {
+                    title: `【 ${value} 】缓存值：`,
+                    area: ['480px', '320px']
+                })
+            });
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

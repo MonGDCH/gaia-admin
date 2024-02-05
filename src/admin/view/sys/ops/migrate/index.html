@@ -1,0 +1,220 @@
+<?php $this->extend('page');?>
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="backup" lay-filter="backup"></table>
+    </div>
+</div>
+
+
+<div class="layui-card">
+    <div class="layui-card-header">数据库表</div>
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table" style="margin-top: -15px;"></table>
+    </div>
+</div>
+
+<script type="text/html" id="table-toolbar">
+    <div class="layui-btn-container">
+        <?php if($this->checkAuth('/sys/ops/migrate/backup', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" lay-event="backup">备份表</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/ops/migrate/optimize', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" lay-event="optimize">优化表</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/ops/migrate/repair', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" lay-event="repair">修复表</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<script type="text/html" id="table-operate">
+    <div class="oper-btns">
+        <button type="button" class="layui-btn layui-btn-xs" lay-event="field">详细信息</button>
+    </div>
+</script>
+
+<script type="text/html" id="backup-operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/ops/migrate/download', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-xs" lay-event="download">下载</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mTable', 'action', 'http', 'common'], function () {
+        const mTable = layui.mTable
+        const action = layui.action
+        const http = layui.http
+        const common = layui.common
+
+        // 渲染数据库表
+        mTable.render({
+            id: 'table',
+            elem: '#table',
+            url: "<?=$this->url('/sys/ops/migrate')?>?isApi=1",
+            page: false,
+            toolbar: '#table-toolbar',
+            defaultToolbar: [{
+                title: '刷新',
+                layEvent: 'refresh',
+                icon: 'layui-icon-refresh'
+            }, {
+                title: '数据字典',
+                layEvent: 'dictionary',
+                icon: 'layui-icon-read'
+            }, 'filter', 'exports', 'print'],
+            cols: [[
+                { type: 'checkbox' },
+                { field: 'name', title: '表名', width: 200 },
+                { field: 'comment', title: '备注', minWidth: 200 },
+                { field: 'engine', title: '类型', width: 100, align: 'center' },
+                { field: 'data_length', title: '大小', width: 160, align: 'center', templet: d => parseByte(d.data_length) },
+                { field: 'rows', title: '行数', width: 120, align: 'center' },
+                { field: 'update_time', title: '更新时间', width: 168, align: 'center' },
+                { title: '操作', width: 120, templet: '#table-operate' }
+            ]]
+        })
+        mTable.bindEvent('table', {
+            toolbar: {
+                // 查看数据字典
+                dictionary: (res, table) => {
+                    window.open("<?=$this->url('/sys/ops/migrate', ['type' => 'dictionary'])?>", '_blank')
+                },
+                // 备份表
+                backup: (res, table) => {
+                    let { data } = table.checkStatus('table')
+                    let queryData = data.map(item => item.name)
+                    if (queryData.length < 1) {
+                        // toast.error('请选择需要备份的库表');
+                        layer.msg('请选择需要备份的库表', { icon: 2 })
+                        return false;
+                    }
+                    http.ajax({
+                        url: "<?=$this->url('/sys/ops/migrate/backup')?>",
+                        method: 'post',
+                        data: { tables: queryData.join(',') }
+                    }).then(ret => {
+                        if (ret.code != 1) {
+                            // toast.error(ret.msg);
+                            layer.msg(ret.msg, { icon: 2 })
+                            return false;
+                        }
+                        // 刷新备份表
+                        mTable.reload('backup', { page: 1 })
+                        layer.msg(ret.msg, { icon: 1 })
+
+                        // toast.success(ret.msg)
+                    })
+                },
+                // 优化表
+                optimize: (res, table) => {
+                    let { data } = table.checkStatus('table')
+                    let queryData = data.map(item => item.name)
+                    if (queryData.length < 1) {
+                        // toast.error('请选择需要优化的库表');
+                        layer.msg('请选择需要优化的库表', { icon: 2 })
+                        return false;
+                    }
+                    http.ajax({
+                        url: "<?=$this->url('/sys/ops/migrate/optimize')?>",
+                        method: 'post',
+                        data: { tables: queryData.join(',') }
+                    }).then(ret => {
+                        if (ret.code != 1) {
+                            // toast.error(ret.msg);
+                            layer.msg(ret.msg, { icon: 2 })
+                            return false;
+                        }
+
+                        layer.msg(ret.msg, { icon: 1 })
+                        // toast.success(ret.msg)
+                    })
+                },
+                // 修复表
+                repair: (res, table) => {
+                    let { data } = table.checkStatus('table')
+                    let queryData = data.map(item => item.name)
+                    if (queryData.length < 1) {
+                        // toast.error('请选择需要修复的库表');
+                        layer.msg('请选择需要修复的库表', { icon: 2 })
+                        return false;
+                    }
+                    http.ajax({
+                        url: "<?=$this->url('/sys/ops/migrate/repair')?>",
+                        method: 'post',
+                        data: { tables: queryData.join(',') }
+                    }).then(ret => {
+                        if (ret.code != 1) {
+                            layer.msg(ret.msg, { icon: 2 })
+                            // toast.error(ret.msg);
+                            return false;
+                        }
+
+                        layer.msg(ret.msg, { icon: 1 })
+                        // toast.success(ret.msg)
+                    })
+                }
+            },
+            tool: {
+                // 查看表详情
+                field: (data) => {
+                    let url = "<?=$this->url('/sys/ops/migrate', ['type' => 'field'])?>" + '&table=' + data.name
+                    action.dialog(url, data.comment || data.name, {
+                        btn: ['关闭']
+                    })
+                }
+            }
+        })
+
+
+        // 渲染备份表
+        mTable.render({
+            id: 'backup',
+            elem: '#backup',
+            toolbar: '<div>数据库备份记录</div>',
+            url: "<?=$this->url('/sys/ops/migrate')?>?isApi=1",
+            where: {
+                type: 'backup'
+            },
+            page: true,
+            limit: 3,
+            limits: [3, 5, 10],
+            cols: [[
+                { field: 'filename', title: '备份名称', minWidth: 240 },
+                { field: 'part', title: 'part', width: 80, align: 'center' },
+                { field: 'size', title: '大小', width: 160, align: 'center', templet: d => parseByte(d.size) },
+                { field: 'compress', title: 'compress', width: 100, align: 'center' },
+                { field: 'time', title: '备份时间', width: 168, align: 'center', templet: d => common.date('Y-m-d H:i:s', d.time) },
+                { title: '操作', templet: '#backup-operate', minWidth: 200 }
+            ]]
+        })
+        mTable.bindEvent('backup', {
+            tool: {
+                download: (data, table) => {
+                    window.open("<?=$this->url('/sys/ops/migrate/download')?>" + '?filename=' + data.time, '_blank')
+                }
+            }
+        })
+
+        // 格式化文件大小
+        function parseByte(size) {
+            if (size == 0) {
+                return '-';
+            }
+            var type = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+            var pos = 0;
+            while (size >= 1024) {
+                size /= 1024;
+                pos++;
+            }
+
+            return (Math.round(size * 100) / 100) + ' ' + type[pos]
+        }
+    })
+</script>
+<?php $this->blockEnd(); ?>

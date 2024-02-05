@@ -1,0 +1,55 @@
+<?php $this->layout('page'); ?>
+
+<div class="layui-card page-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <div class="mon-form-item">
+                <label class="mon-form-label">标题</label>
+                <div class="mon-form-input">
+                    <input type="text" name="title" lay-verify="required" lay-verType="tips" lay-reqText="请输入标题"
+                        placeholder="请输入消息标题" class="layui-input">
+                </div>
+            </div>
+            <div class="mon-form-item">
+                <label class="mon-form-label">类型</label>
+                <div class="mon-form-input">
+                    <?=$this->build_select('type', $type, [], ['lay-search' => ''])?>
+                </div>
+            </div>
+            <div class="mon-form-item">
+                <label class="mon-form-label">内容</label>
+                <div class="mon-form-input">
+                    <textarea name="content" id="content"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mForm', 'editor'], function () {
+        const mForm = layui.mForm
+        const editor = layui.editor
+        // 渲染表单
+        mForm.render()
+        mForm.submit('submit', null, null, () => {
+            return { content: editor.getContent('content') }
+        })
+        // 编辑器
+        editor.render('content', {
+            language: "zh_CN",
+            images_upload_url: "<?=$this->url('/upload')?>"
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

@@ -1,0 +1,32 @@
+{
+    "name": "mongdch/gaia-admin",
+    "description": "The gaia Framework admin plugin",
+    "license": "MIT",
+    "homepage": "http://gdmon.com/",
+    "keywords": [
+        "gaia",
+        "admin"
+    ],
+    "authors": [
+        {
+            "name": "Mon",
+            "email": "985558837@qq.com",
+            "homepage": "http://www.gdmon.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "mongdch/mon-think-orm": "^1.0",
+        "mongdch/mon-auth-think": "^1.0",
+        "mongdch/mon-http": "^1.1",
+        "mongdch/mon-captcha": "^1.3",
+        "mongdch/mon-cache": "^1.0",
+        "workerman/crontab": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "gaia\\admin\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,106 @@
+<?php $this->layout('page'); ?>
+
+<!-- 搜索 -->
+<div class="search-panel" id="search-form">
+    <form class="layui-form" lay-filter="search">
+        <div class="layui-form-item">
+            <label class="layui-form-label">应用名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="app" placeholder="搜索应用名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">模块名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="module" placeholder="搜索模块名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户ID：</label>
+            <div class="layui-input-block">
+                <input type="number" name="uid" placeholder="搜索用户ID" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">更新时间：</label>
+            <div class="layui-input-block">
+                <input type="text" name="update_time" placeholder="更新时间" class="layui-input">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table"></table>
+    </div>
+</div>
+
+<script type="text/html" id="toolbar">
+    <?= $this->build_toolbar('/sys/dev/counter', $uid, ['search', 'reset']); ?>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/dev/counter/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改计数</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/dev/counter/remove', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-idx="{{ d.id }}" data-url="<?=$this->url('/sys/dev/counter/remove')?>" data-title="确认移除该计数器么？" lay-event="confirm">移除计数器</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mTable', 'mForm', 'common'], function () {
+        const mTable = layui.mTable
+        const mForm = layui.mForm
+        const common = layui.common
+
+        // 渲染搜索表单
+        mForm.render()
+        // 渲染表格
+        mTable.render({
+            elem: '#table',
+            url: "<?=$this->url('/sys/dev/counter')?>?isApi=1",
+            cols: [[
+                { title: 'ID', field: 'id', width: 80, align: 'center' },
+                { title: '所属应用', field: 'app', width: 160, align: 'center' },
+                { title: '所属模块', field: 'module', width: 160, align: 'center' },
+                { title: '用户ID', field: 'uid', width: 160, align: 'center' },
+                { title: '计数', field: 'count', width: 160, align: 'center' },
+                { title: '备注', field: 'remark', minWidth: 180 },
+                { title: '更新时间', field: 'update_time', width: 168, align: 'center', templet: d => common.date('Y-m-d H:i:s', d.update_time) },
+                { title: '创建时间', field: 'create_time', width: 168, align: 'center', templet: d => common.date('Y-m-d H:i:s', d.create_time) },
+                { title: '操作', field: 'operate', templet: '#operate', minWidth: 180 }
+            ]]
+        })
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            toolbar: {
+                // 搜索
+                search: function (data) {
+                    if (data.update_time) {
+                        let iCreate = data.update_time.split(' - ')
+                        data.start_time = common.strtotime(iCreate[0] + ' 00:00:00')
+                        data.end_time = common.strtotime(iCreate[1] + ' 23:59:59')
+                    }
+
+                    return data
+                },
+            },
+            tool: {
+                // 编辑
+                edit: {
+                    url: "<?=$this->url('/sys/dev/counter/edit')?>",
+                    title: '修改计数',
+                    dialog: true
+                }
+            },
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

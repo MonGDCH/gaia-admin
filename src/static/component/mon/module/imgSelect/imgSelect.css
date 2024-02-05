@@ -1,0 +1,71 @@
+#chooseimg {
+    padding: 10px;
+}
+
+#chooseimg .img-select-oper {
+    /* margin-bottom: 14px; */
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#chooseimg .img-select-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    /* margin-bottom: 10px; */
+    width: 100%;
+    display: grid;
+    /* 指定每一行的宽度 每个宽度中间用空格隔开 */
+    grid-template-rows: 110px 110px 110px;
+    /* 指定每一列的宽度 每个宽度中间用空格隔开 */
+    grid-template-columns: 110px 110px 110px 110px 110px 110px;
+}
+
+#chooseimg .img-select-list li {
+    height: 98px;
+    width: 98px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#chooseimg .img-select-list li:hover,
+#chooseimg .img-select-list li.active {
+    border-color: #3498db;
+}
+
+#chooseimg .img-select-list li img {
+    vertical-align: middle;
+    width: auto;
+    height: auto;
+    max-width: 96px;
+    max-height: 96px;
+}
+
+#chooseimg .img-select-list .img-select-item-badge {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    font-size: 12px;
+    background-color: #3498db;
+    color: #fff;
+    padding: 0px 4px;
+    border-radius: 50%;
+    display: none;
+}
+
+#chooseimg .img-select-list li.active .img-select-item-badge {
+    display: inline;
+}
+
+#chooseimg #img-select-page {
+    text-align: right;
+    padding: 0 4px;
+}

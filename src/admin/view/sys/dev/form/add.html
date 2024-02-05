@@ -1,0 +1,160 @@
+<?php $this->layout('page'); ?>
+
+<form class="layui-form layui-card">
+    <!-- <div class="layui-card-header">表单工具</div> -->
+    <div class="layui-card-body">
+        <div class="layui-row layui-col-space12">
+            <div class="layui-col-md2 layui-col-sm-3">
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">表单组件</ol>
+                        <li>表单模板</ol>
+                    </ul>
+                    <div class="layui-tab-content" id="layui-form-attribute">
+                        <div class="layui-tab-item layui-form layui-show">
+                            <!-- 组件列表 -->
+                            <?php $this->load('/sys/dev/form/comm/component') ?>
+                        </div>
+                        <!-- 加载远程表单模板 -->
+                        <div id="layui-form-template" class="layui-tab-item"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md8 layui-col-sm-6">
+                <div class="layui-card-header">
+                    <!-- 操作列表 -->
+                    <?php $this->load('/sys/dev/form/comm/oper') ?>
+                </div>
+                <!-- 表单设计区域 -->
+                <div id="formBuilder" style="width: 100%"></div>
+                <!-- 表单隐藏域 -->
+                <!-- <textarea id="formdesign" name="formdesign" hidden></textarea> -->
+            </div>
+            <div class="layui-col-md2 layui-col-sm-3" style="padding-top: 0;">
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">组件属性</li>
+                        <li id="form-config-attr">表单属性</li>
+                    </ul>
+
+                    <div class="layui-tab-content" id="layui-form-attribute">
+                        <div class="layui-tab-item layui-form layui-show" id="Propertie" lay-filter="Propertie">
+                        </div>
+                        <div class="layui-tab-item" id="formConfig">
+                            <!-- 表单配置 -->
+                            <?php $this->load('/sys/dev/form/comm/form') ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="layui-htmlview" style="display: none;">
+    <textarea id="json-code"></textarea>
+    <div class="layui-htmlbtn">
+        <button id="copy-code" class="layui-btn layui-hide">复制代码</button>
+        <button id="import-code" class="layui-btn layui-hide">导入数据</button>
+    </div>
+</div>
+
+<div class="hidden">
+    <button id="common-upload">公共的上传按钮</button>
+</div>
+
+<?php $this->block('js'); ?>
+<script src="<?= $this->assets('static/component/sortable/sortable.js') ?>"></script>
+<script>
+    layui.use(['jquery', 'flow', 'formDesign', 'http'], function () {
+        const $ = layui.jquery
+        const flow = layui.flow
+        const formDesign = layui.formDesign
+        const http = layui.http
+
+        // 设计器
+        const design = formDesign.render({
+            elem: '#formBuilder',
+            upload: "<?=$this->url('/upload')?>",
+            preview: "<?=$this->url('/sys/dev/form/preview')?>",
+            eval: []
+        });
+
+        // 返回
+        $('body').on('click', '.layui-btn-return', function () {
+            window.location.href = "<?=$this->url('/sys/dev/form')?>"
+        })
+
+        $('body').on('click', '.layui-btn-save', function () {
+            layer.confirm('确定保存表单模型吗?', { icon: 3, title: 'Tips' }, async function (index) {
+                layer.close(index);
+                let config = design.config.data
+                if (config.length <= 0) {
+                    layer.msg('设计表单不能为空', { icon: 2 })
+                    return false;
+                }
+                let values = formDesign.getFormConfig()
+                if (values.title == '') {
+                    layer.msg('表单名称不能为空', { icon: 2 })
+                    // 优化体验，切换栏目
+                    document.querySelector('#form-config-attr').click()
+                    document.querySelector('input[name="title"].form-config-item').focus()
+                    return false;
+                }
+                values.config = JSON.stringify(config)
+
+                const result = await http.post('', values)
+                if (result.code != '1') {
+                    layer.msg(result.msg, { icon: 2 })
+                    return false;
+                }
+                // 操作成功
+                layer.msg(result.msg, { icon: 1 }, function () {
+                    window.location.href = "<?=$this->url('/sys/dev/form')?>"
+                })
+            });
+        })
+
+        // 流加载
+        const tmpList = {}
+        $('body').on('click', '.tmp-load-btn', function () {
+            let idx = this.dataset.load
+            layer.confirm('确认要导入该模板么？', { icon: 3, title: 'Tips' }, function (index) {
+                let tmp = tmpList['tmp_' + idx]
+                design.importConfig(tmp)
+                layer.close(index)
+            });
+        })
+        flow.load({
+            elem: '#layui-form-template',
+            done: async function (page, next) {
+                const limit = 10;
+                const result = await http.ajax({
+                    url: "<?=$this->url('/sys/dev/form')?>?isApi=1&status=1&page=" + page,
+                    loading: false,
+                })
+                const total = Math.ceil(result.count / limit);
+                const list = result.data.map(item => {
+                    tmpList['tmp_' + item.id] = JSON.parse(item.config)
+                    return `<div class="item-tmp">
+                                <div class="item-tmp-img">
+                                    <svg t="1696659810440" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg" p-id="7866" width="64" height="64">
+                                        <path
+                                            d="M363.054545 623.709091h-186.181818c-69.818182 0-130.327273 60.509091-130.327272 130.327273v93.090909c0 69.818182 60.509091 130.327273 130.327272 130.327272h186.181818c74.472727 0 130.327273-55.854545 130.327273-130.327272v-93.090909c0-69.818182-60.509091-130.327273-130.327273-130.327273z m55.854546 223.418182c0 32.581818-23.272727 55.854545-55.854546 55.854545h-186.181818c-32.581818 0-55.854545-23.272727-55.854545-55.854545v-93.090909c0-32.581818 23.272727-55.854545 55.854545-55.854546h186.181818c32.581818 0 55.854545 23.272727 55.854546 55.854546v93.090909zM847.127273 46.545455h-186.181818c-69.818182 0-130.327273 60.509091-130.327273 130.327272v46.545455c0 69.818182 60.509091 130.327273 130.327273 130.327273h186.181818c74.472727 0 130.327273-55.854545 130.327272-130.327273v-46.545455c0-69.818182-60.509091-130.327273-130.327272-130.327272z m55.854545 176.872727c0 32.581818-23.272727 55.854545-55.854545 55.854545h-186.181818c-32.581818 0-55.854545-23.272727-55.854546-55.854545v-46.545455c0-32.581818 23.272727-55.854545 55.854546-55.854545h186.181818c32.581818 0 55.854545 23.272727 55.854545 55.854545v46.545455zM363.054545 46.545455h-186.181818c-69.818182 0-130.327273 60.509091-130.327272 130.327272v279.272728c0 69.818182 60.509091 130.327273 130.327272 130.327272h186.181818c74.472727 0 130.327273-55.854545 130.327273-130.327272v-279.272728c0-69.818182-60.509091-130.327273-130.327273-130.327272z m55.854546 409.6c0 37.236364-18.618182 55.854545-55.854546 55.854545h-186.181818c-32.581818 0-55.854545-23.272727-55.854545-55.854545v-279.272728c0-32.581818 23.272727-55.854545 55.854545-55.854545h186.181818c32.581818 0 55.854545 23.272727 55.854546 55.854545v279.272728zM847.127273 390.981818h-186.181818c-69.818182 0-130.327273 60.509091-130.327273 130.327273v325.818182c0 69.818182 60.509091 130.327273 130.327273 130.327272h186.181818c69.818182 0 130.327273-60.509091 130.327272-130.327272v-325.818182c0-69.818182-60.509091-130.327273-130.327272-130.327273z m55.854545 456.145455c0 32.581818-23.272727 55.854545-55.854545 55.854545h-186.181818c-32.581818 0-55.854545-23.272727-55.854546-55.854545v-325.818182c0-32.581818 23.272727-55.854545 55.854546-55.854546h186.181818c32.581818 0 55.854545 23.272727 55.854545 55.854546v325.818182z"
+                                            p-id="7867" fill="#bfbfbf"></path>
+                                    </svg>
+                                </div>
+                                <div class="item-tmp-desc">
+                                    <div class="item-tmp-title"><strong>#${item.id} ${item.title}</strong></div>
+                                    <div class="item-tmp-load"><a href="javascript:void(0);" data-load="${item.id}" class="tmp-load-btn">加载此模板</a></div>
+                                </div>
+                            </div>`
+                })
+
+                next(list.join(''), page < total);
+            }
+        });
+    })
+</script>
+<?php $this->blockEnd() ?>

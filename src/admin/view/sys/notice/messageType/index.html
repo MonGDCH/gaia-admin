@@ -1,0 +1,107 @@
+<?php $this->layout('page'); ?>
+
+<!-- 搜索 -->
+<div class="search-panel" id="search-form">
+    <form class="layui-form" lay-filter="search">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" placeholder="搜索名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-block">
+                <?=$this->build_select('status', $status, [], [], true, true)?>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">创建时间：</label>
+            <div class="layui-input-block">
+                <input type="text" name="create_time" placeholder="搜索创建时间" class="layui-input date-range">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table"></table>
+    </div>
+</div>
+
+
+<!-- 表格操作栏 -->
+<script type="text/html" id="toolbar">
+    <?= $this->build_toolbar('/sys/notice/type', $uid, ['add', 'search', 'reset']); ?>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/notice/type/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">修改</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mTable', 'mForm', 'common'], function () {
+        const mTable = layui.mTable
+        const mForm = layui.mForm
+        const common = layui.common
+
+        // 渲染搜索表单
+        mForm.render()
+        // 渲染表格
+        mTable.render({
+            elem: '#table',
+            url: "<?=$this->url('/sys/notice/type')?>?isApi=1",
+            cols: [[
+                { field: 'id', title: 'ID', width: 80, align: 'center' },
+                { field: 'title', title: '名称', width: 160, align: 'center' },
+                { field: 'img', title: '图标', width: 100, align: 'center', templet: function (d) { return mTable.format.image(d.img) } },
+                { field: 'remark', title: '备注', minWidth: 240 },
+                { field: 'status', title: '状态', width: 100, align: 'center', templet: function (d) { return mTable.format.status(d.status) } },
+                { field: 'update_time', title: '修改时间', width: 168, align: 'center', templet: function (d) { return mTable.format.dateTime(d.update_time) } },
+                { field: 'create_time', title: '创建时间', width: 168, align: 'center', templet: function (d) { return mTable.format.dateTime(d.create_time) } },
+                { field: 'operate', title: '操作', templet: '#operate', minWidth: 250 }
+            ]]
+        })
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            // toolbar事件
+            toolbar: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/notice/type/add')?>",
+                    title: '新增消息类型',
+                    dialog: true
+                },
+                // 搜索
+                search: function (data) {
+                    if (data.create_time) {
+                        let iCreate_time = data.create_time.split(' - ')
+                        data.start_time = common.strtotime(iCreate_time[0] + ' 00:00:00')
+                        data.end_time = common.strtotime(iCreate_time[1] + ' 23:59:59')
+                    }
+
+                    return data
+                },
+            },
+            // tool事件
+            tool: {
+                // 编辑
+                edit: {
+                    url: "<?=$this->url('/sys/notice/type/edit')?>",
+                    title: '编辑消息类型',
+                    dialog: true
+                }
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

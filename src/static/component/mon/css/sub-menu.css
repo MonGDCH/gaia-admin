@@ -1,0 +1,52 @@
+/* sub-menu 布局 */
+.sub-menu-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 14px;
+}
+
+.sub-menu {
+    width: 200px;
+    min-width: 200px;
+    margin-right: 20px;
+}
+
+.sub-menu .sub-menu-item {
+    padding: 14px 16px;
+    background: #fff;
+}
+
+.sub-menu .sub-menu-item .sub-menu-icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 23px;
+}
+
+.sub-menu .sub-menu-item a.active {
+    color: #4285F4;
+}
+
+.sub-menu .sub-menu-item a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sub-menu .sub-menu-item a:hover {
+    color: #4285F4;
+}
+
+.sub-menu-main {
+    width: 100%;
+    min-width: 520px;
+}
+
+.sub-menu-main-content {
+    padding: 14px 24px;
+    background: #fff;
+    margin-bottom: 12px;
+}
+
+.sub-menu-main-title {
+    margin-bottom: 12px;
+}

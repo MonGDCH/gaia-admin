@@ -1,0 +1,79 @@
+.pear-card {
+	width: 100%;
+	height: 66px;
+	background-color: #F8F8F8;
+	display: inline-block;
+	border-radius: 5px;
+	text-align: center;
+	margin-bottom: 3px;
+	cursor: pointer;
+}
+
+.pear-card:hover {
+	box-shadow: 2px 0 8px 0 lightgray !important;
+}
+
+.pear-card i {
+	font-size: 30px;
+	height: 66px;
+	line-height: 66px;
+}
+
+.pear-card-title {
+	margin-top: 3px;
+}
+
+.fast-menu-close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: none;
+}
+
+.fast-menu-item:hover .fast-menu-close {
+	display: block;
+}
+
+.fast-menu-close .layui-icon {
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.fast-menu-item-title {
+	white-space: nowrap;
+	/* text-overflow: ellipsis; */
+	overflow: hidden;
+	display: block;
+	width: 100%;
+}
+
+.layui-tab-content {
+	padding: 12px;
+	padding-top: 0;
+}
+
+.user-info {
+	padding: 25px;
+}
+
+.user-info .user-info-head {
+	width: 120px;
+	height: 120px;
+	line-height: 120px;
+	position: relative;
+	display: inline-block;
+	border-radius: 50%;
+	overflow: hidden;
+	cursor: pointer;
+	margin: 0 auto;
+}
+
+.user-info .username {
+	padding-top: 5px;
+	font-size: 20px;
+}
+
+.user-info .desc {
+	padding-top: 10px;
+	font-size: 14px;
+}

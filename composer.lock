@@ -1,0 +1,748 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "0a201294dd1c4e711ce713f89a55c2db",
+    "packages": [
+        {
+            "name": "mongdch/mon-auth-think",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-auth-think.git",
+                "reference": "3c068de7efad0a955c138fda2261eb90b7845620"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-auth-think/zipball/3c068de7efad0a955c138fda2261eb90b7845620",
+                "reference": "3c068de7efad0a955c138fda2261eb90b7845620",
+                "shasum": ""
+            },
+            "require": {
+                "mongdch/mon-think-orm": "^1.0",
+                "mongdch/mon-util": "^1.3",
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/support.php"
+                ],
+                "psr-4": {
+                    "mon\\auth\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP权限控制库",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "access-token",
+                "api-signature",
+                "jwt",
+                "rbac",
+                "think-orm"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-auth-think/issues",
+                "source": "https://github.com/MonGDCH/mon-auth-think/tree/1.0.0"
+            },
+            "time": "2024-01-27T08:23:51+00:00"
+        },
+        {
+            "name": "mongdch/mon-cache",
+            "version": "1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-cache.git",
+                "reference": "821433801103f913ddfbb7ca92c656233ce60a81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-cache/zipball/821433801103f913ddfbb7ca92c656233ce60a81",
+                "reference": "821433801103f913ddfbb7ca92c656233ce60a81",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0",
+                "psr/simple-cache": "^1.0"
+            },
+            "suggest": {
+                "ext-redis": "For better performance support."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mon\\cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The PSR-16 simple cache utils.",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "cache",
+                "psr-16"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-cache/issues",
+                "source": "https://github.com/MonGDCH/mon-cache/tree/1.0.5"
+            },
+            "time": "2024-01-05T07:43:58+00:00"
+        },
+        {
+            "name": "mongdch/mon-captcha",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-captcha.git",
+                "reference": "d9cea2cc16889a166295bd04706dbd9efc68ed9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-captcha/zipball/d9cea2cc16889a166295bd04706dbd9efc68ed9b",
+                "reference": "d9cea2cc16889a166295bd04706dbd9efc68ed9b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [],
+                "psr-4": {
+                    "mon\\captcha\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The PHP Captcha Library",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "captcha",
+                "mon",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-captcha/issues",
+                "source": "https://github.com/MonGDCH/mon-captcha/tree/1.3.0"
+            },
+            "time": "2023-06-14T09:54:37+00:00"
+        },
+        {
+            "name": "mongdch/mon-http",
+            "version": "1.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-http.git",
+                "reference": "b70a771b64b3b4776557521534690b721e91142b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-http/zipball/b70a771b64b3b4776557521534690b721e91142b",
+                "reference": "b70a771b64b3b4776557521534690b721e91142b",
+                "shasum": ""
+            },
+            "require": {
+                "mongdch/mon-util": "^1.3",
+                "nikic/fast-route": "^1.3",
+                "php": ">=7.2.0",
+                "workerman/workerman": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/support.php"
+                ],
+                "psr-4": {
+                    "mon\\http\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The Workerman HTTP Server",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "http server",
+                "mon",
+                "workerman"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-http/issues",
+                "source": "https://github.com/MonGDCH/mon-http/tree/1.1.8"
+            },
+            "time": "2023-12-11T01:57:00+00:00"
+        },
+        {
+            "name": "mongdch/mon-think-orm",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-think-orm.git",
+                "reference": "78dd8ffc9af513dfb974ad2d366c52f5149bcb74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-think-orm/zipball/78dd8ffc9af513dfb974ad2d366c52f5149bcb74",
+                "reference": "78dd8ffc9af513dfb974ad2d366c52f5149bcb74",
+                "shasum": ""
+            },
+            "require": {
+                "mongdch/mon-util": "^1.4",
+                "topthink/think-orm": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mon\\thinkOrm\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "封装的think-orm",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "orm",
+                "think"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-think-orm/issues",
+                "source": "https://github.com/MonGDCH/mon-think-orm/tree/1.0.0"
+            },
+            "time": "2024-01-27T08:20:18+00:00"
+        },
+        {
+            "name": "mongdch/mon-util",
+            "version": "1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MonGDCH/mon-util.git",
+                "reference": "5b22a5e923e5f99cce86119b4d6aedf55f3a7d57"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MonGDCH/mon-util/zipball/5b22a5e923e5f99cce86119b4d6aedf55f3a7d57",
+                "reference": "5b22a5e923e5f99cce86119b4d6aedf55f3a7d57",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "psr/container": "1.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "mon\\util\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Mon",
+                    "email": "985558837@qq.com",
+                    "homepage": "http://www.gdmon.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "常用的PHP工具类库，包含了各种各式各样的工具，如：容器、时间、验证器、多语言、图片处理、二维码生成、IP地址解析、文件操作、数据安全、数据字典等等等等。。。",
+            "homepage": "http://gdmon.com/",
+            "keywords": [
+                "mon",
+                "tool",
+                "util"
+            ],
+            "support": {
+                "issues": "https://github.com/MonGDCH/mon-util/issues",
+                "source": "https://github.com/MonGDCH/mon-util/tree/1.5.2"
+            },
+            "time": "2024-02-04T07:43:52+00:00"
+        },
+        {
+            "name": "nikic/fast-route",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/FastRoute.git",
+                "reference": "181d480e08d9476e61381e04a71b34dc0432e812"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/FastRoute/zipball/181d480e08d9476e61381e04a71b34dc0432e812",
+                "reference": "181d480e08d9476e61381e04a71b34dc0432e812",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35|~5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "FastRoute\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov",
+                    "email": "nikic@php.net"
+                }
+            ],
+            "description": "Fast request router for PHP",
+            "keywords": [
+                "router",
+                "routing"
+            ],
+            "support": {
+                "issues": "https://github.com/nikic/FastRoute/issues",
+                "source": "https://github.com/nikic/FastRoute/tree/master"
+            },
+            "time": "2018-02-13T20:26:39+00:00"
+        },
+        {
+            "name": "psr/container",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/container/issues",
+                "source": "https://github.com/php-fig/container/tree/master"
+            },
+            "time": "2017-02-14T16:28:37+00:00"
+        },
+        {
+            "name": "psr/log",
+            "version": "1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/1.1.4"
+            },
+            "time": "2021-05-03T11:20:27+00:00"
+        },
+        {
+            "name": "psr/simple-cache",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
+                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/master"
+            },
+            "time": "2017-10-23T01:57:42+00:00"
+        },
+        {
+            "name": "topthink/think-helper",
+            "version": "v3.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/think-helper.git",
+                "reference": "769acbe50a4274327162f9c68ec2e89a38eb2aff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/think-helper/zipball/769acbe50a4274327162f9c68ec2e89a38eb2aff",
+                "reference": "769acbe50a4274327162f9c68ec2e89a38eb2aff",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helper.php"
+                ],
+                "psr-4": {
+                    "think\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "yunwuxin",
+                    "email": "448901948@qq.com"
+                }
+            ],
+            "description": "The ThinkPHP6 Helper Package",
+            "support": {
+                "issues": "https://github.com/top-think/think-helper/issues",
+                "source": "https://github.com/top-think/think-helper/tree/v3.1.6"
+            },
+            "time": "2021-12-15T04:27:55+00:00"
+        },
+        {
+            "name": "topthink/think-orm",
+            "version": "v2.0.61",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/think-orm.git",
+                "reference": "10528ebf4a5106b19c3bac9c6deae7a67ff49de6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/think-orm/zipball/10528ebf4a5106b19c3bac9c6deae7a67ff49de6",
+                "reference": "10528ebf4a5106b19c3bac9c6deae7a67ff49de6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pdo": "*",
+                "php": ">=7.1.0",
+                "psr/log": "^1.0|^2.0",
+                "psr/simple-cache": "^1.0|^2.0",
+                "topthink/think-helper": "^3.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7|^8|^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "stubs/load_stubs.php"
+                ],
+                "psr-4": {
+                    "think\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "liu21st",
+                    "email": "liu21st@gmail.com"
+                }
+            ],
+            "description": "think orm",
+            "keywords": [
+                "database",
+                "orm"
+            ],
+            "support": {
+                "issues": "https://github.com/top-think/think-orm/issues",
+                "source": "https://github.com/top-think/think-orm/tree/v2.0.61"
+            },
+            "time": "2023-04-20T14:27:51+00:00"
+        },
+        {
+            "name": "workerman/crontab",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/walkor/crontab.git",
+                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/walkor/crontab/zipball/b78f1556f2977715b9cb5653129e6d9cf160d966",
+                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0",
+                "workerman/workerman": ">=4.0.20"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Workerman\\Crontab\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "walkor",
+                    "email": "walkor@workerman.net",
+                    "homepage": "http://www.workerman.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A crontab written in PHP based on workerman",
+            "homepage": "http://www.workerman.net",
+            "keywords": [
+                "crontab"
+            ],
+            "support": {
+                "email": "walkor@workerman.net",
+                "forum": "http://wenda.workerman.net/",
+                "issues": "https://github.com/walkor/workerman/issues",
+                "source": "https://github.com/walkor/crontab",
+                "wiki": "http://doc.workerman.net/"
+            },
+            "time": "2022-10-17T01:59:19+00:00"
+        },
+        {
+            "name": "workerman/workerman",
+            "version": "v4.1.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/walkor/workerman.git",
+                "reference": "f7c9667c7b5387c01fa9e50ee79ed931e93ee76e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/walkor/workerman/zipball/f7c9667c7b5387c01fa9e50ee79ed931e93ee76e",
+                "reference": "f7c9667c7b5387c01fa9e50ee79ed931e93ee76e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "suggest": {
+                "ext-event": "For better performance. "
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Workerman\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "walkor",
+                    "email": "walkor@workerman.net",
+                    "homepage": "http://www.workerman.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
+            "homepage": "http://www.workerman.net",
+            "keywords": [
+                "asynchronous",
+                "event-loop"
+            ],
+            "support": {
+                "email": "walkor@workerman.net",
+                "forum": "http://wenda.workerman.net/",
+                "issues": "https://github.com/walkor/workerman/issues",
+                "source": "https://github.com/walkor/workerman",
+                "wiki": "http://doc.workerman.net/"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/workerman",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://www.patreon.com/walkor",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2023-08-09T03:37:45+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.2.0"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.2.0"
+}

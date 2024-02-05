@@ -1,0 +1,167 @@
+<?php $this->layout('page'); ?>
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <table id="menu-table" lay-filter="menu-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作栏 -->
+<script type="text/html" id="menu-toolbar">
+    <?php if($this->checkAuth('/sys/menu/add', $uid)): ?>
+    <button class="layui-btn layui-btn-sm layui-btn-success btn-add" lay-event="add" title="新增">
+        <i class="layui-icon layui-icon-add-1"></i>新增
+    </button> 
+    <?php endif; ?>
+    <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="expandAll">
+        <i class="layui-icon layui-icon-spread-left"></i>
+        展开
+    </button>
+    <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="foldAll">
+        <i class="layui-icon layui-icon-shrink-right"></i>
+        折叠
+    </button>
+    <div class="layui-input-inline">
+        <input type="text" id="searchValue" placeholder="回车搜索" lay-affix="clear" class="layui-input">
+    </div>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="menu-oper">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/menu/add', $uid)): ?>
+        <!-- {{# if(d.status == 1){ }} -->
+        <button type="button" class="layui-btn layui-btn-success layui-btn-xs" lay-event="add">
+            <i class="layui-icon layui-icon-add-1"> 新增子菜单</i>
+        </button>
+        <!-- {{# } }} -->
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/menu/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-edit"> 编辑菜单</i>
+        </button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['jquery', 'treeTable', 'mTable'], function () {
+        const treeTable = layui.treeTable
+        const mTable = layui.mTable
+        const $ = layui.jquery
+        const typeList = JSON.parse('<?=$type?>')
+        const openTypeList = JSON.parse('<?=$openType?>')
+
+        // 渲染菜单表格
+        treeTable.render({
+            id: 'menu-table',
+            url: "<?=$this->url('/sys/menu')?>?isApi=1",
+            elem: '#menu-table',
+            toolbar: '#menu-toolbar',
+            defaultToolbar: [{
+                title: '刷新',
+                layEvent: 'refresh',
+                icon: 'layui-icon-refresh'
+            }, 'filter'],
+            skin: 'line',
+            page: false,
+            cols: [[
+                { field: 'id', title: 'ID', width: 80, align: 'center' },
+                { field: 'title', minWidth: 200, title: '菜单名称' },
+                { field: 'name', title: '链接地址', minWidth: 200 },
+                { field: 'icon', title: '图标', width: 60, align: 'center', templet: mTable.format.icon },
+                { field: 'type', title: '菜单类型', width: 90, align: 'center', templet: d => typeList[d.type] || '未知' },
+                { field: 'openType', title: '打开方式', width: 90, align: 'center', templet: d => openTypeList[d.openType] || '未知' },
+                { field: 'status', title: '状态', width: 80, align: 'center', templet: mTable.format.status },
+                { field: 'sort', title: '权重', width: 60, align: 'center' },
+                { title: '操作', minWidth: 220, templet: '#menu-oper' }
+            ]],
+            response: {
+                statusName: 'code',
+                statusCode: 1,
+                msgName: 'msg',
+                countName: 'count',
+                dataName: 'data'
+            },
+            tree: {
+                view: {
+                    showIcon: false,
+                    dblClickExpand: false,
+                },
+                customName: {
+                    id: 'id',
+                    pid: 'pid',
+                    name: 'title'
+                },
+                data: {
+                    isSimpleData: true,
+                    rootPid: 0
+                }
+            },
+        });
+
+        // 搜索表格
+        $('#searchValue').keydown(function (event) {
+            if (event.keyCode == 13) {
+                const keyword = $('#searchValue').val()
+                const id = '#menu-table'
+
+                treeTable.expandAll("menu-table", true);
+                let $tds = $(id).next('.layui-table-tree').find('.layui-table-body tbody tr td');
+                if (!keyword) {
+                    $tds.css('background-color', 'transparent');
+                    layer.msg("请输入关键字", { icon: 5 });
+                    return;
+                }
+                let searchCount = 0;
+                $tds.each(function () {
+                    $(this).css('background-color', 'transparent');
+                    if ($(this).text().indexOf(keyword) >= 0) {
+                        $(this).css('background-color', 'rgba(250,230,160,0.5)');
+                        if (searchCount == 0) {
+                            $('body,html').stop(true);
+                            $('body,html').animate({ scrollTop: $(this).offset().top - 150 }, 500);
+                        }
+                        searchCount++;
+                    }
+                });
+                if (searchCount == 0) {
+                    layer.msg("没有匹配结果", { icon: 5 });
+                }
+            }
+        })
+
+        // 绑定表格事件
+        mTable.bindEvent('menu-table', {
+            // toolbar事件
+            toolbar: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/menu/add')?>",
+                    title: '新增菜单'
+                },
+                // 展开
+                expandAll: () => {
+                    treeTable.expandAll("menu-table", true);
+                },
+                // 折叠
+                foldAll: () => {
+                    treeTable.expandAll("menu-table", false);
+                }
+            },
+            // 表格tool事件
+            tool: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/menu/add')?>",
+                    title: '新增子菜单'
+                },
+                edit: {
+                    url: "<?=$this->url('/sys/menu/edit')?>",
+                    title: '编辑菜单'
+                }
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

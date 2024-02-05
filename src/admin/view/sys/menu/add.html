@@ -1,0 +1,120 @@
+<?php $this->layout('page'); ?>
+
+<div class="layui-card page-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">父级</label>
+                <div class="layui-input-block">
+                    <input type="text" name="pid" id="pid" value="<?=$idx?>">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" lay-verify="required" lay-verType="tips" lay-reqText="请输入菜单名称"
+                        placeholder="请输入菜单名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">链接地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="required" lay-verType="tips" lay-reqText="请输入链接地址"
+                        placeholder="请输入链接地址" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">打开方式</label>
+                <div class="layui-input-block">
+                    <?= $this->build_radios('openType', $openType, key($openType), [], true); ?>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单类型</label>
+                <div class="layui-input-block">
+                    <?= $this->build_radios('type', $type, key($type), [], true); ?>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图标Icon</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="iconPicker" name="icon" value="layui-icon-template-1" lay-filter="iconPicker"
+                        class="hide">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">权重</label>
+                <div class="layui-input-inline">
+                    <input type="number" lay-affix="number" name="sort" value="10" step="1" min="0" max="100"
+                        lay-verify="required|number" lay-verType="tips" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" name="remark" maxlength="250" placeholder="备注信息"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <?= $this->build_radios('status', $status, key($status), [], true); ?>
+                </div>
+            </div>
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mForm', 'iconPicker', 'cascader'], function () {
+        const mForm = layui.mForm
+        const iconPicker = layui.iconPicker
+        const cascader = layui.cascader
+
+        const menuList = JSON.parse('<?=$menu?>')
+        const parentMenu = cascader({
+            elem: '#pid',
+            clearable: true,
+            value: parseInt("<?=$idx?>", 10),
+            options: menuList,
+            props: {
+                checkStrictly: true,
+                value: 'id',	        //指定选项的值为选项对象的某个属性值	string	—	'value'
+                label: 'title',	        //指定选项标签为选项对象的某个属性值	string	—	'label'
+                children: 'children',	  //指定选项的子选项为选项对象的某个属性值	string	—	'children'
+                disabled: 'disabled',   //指定选项的禁用为选项对象的某个属性值	string	—	'disabled'
+            }
+        });
+
+        // 渲染表单
+        mForm.render()
+        // 渲染图标选择
+        iconPicker.render({
+            // 选择器，推荐使用input
+            elem: '#iconPicker',
+            // 数据类型：fontClass/unicode，推荐使用fontClass
+            type: 'fontClass',
+            // 是否开启搜索：true/false
+            search: true,
+            // 是否开启分页
+            page: false,
+            // 每页显示数量，默认12
+            limit: 16
+        });
+
+        mForm.submit('submit', null, null, (form) => {
+            const field = form.field
+            const pid = parentMenu.getCheckedValues()
+            return { icon: `layui-icon ${form.field.icon}`, pid: pid }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

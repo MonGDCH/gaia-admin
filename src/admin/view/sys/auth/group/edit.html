@@ -1,0 +1,94 @@
+<?php $this->layout('page'); ?>
+
+<div class="layui-card page-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <input type="hidden" name="idx" value="<?=$data['id']?>">
+            <div class="layui-form-item">
+                <label class="layui-form-label">组别名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" lay-verify="required" lay-verType="tips" lay-reqText="请输入组别名称"
+                        placeholder="请输入组别名称" value="<?=$data['title']?>" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">父级组别</label>
+                <div class="layui-input-inline">
+                    <?=$this->build_select('pid', $groups, [$data['pid']]);?>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限</label>
+                <div class="layui-input-block">
+                    <input type="text" name="rules" id="rules">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <?= $this->build_radios('status', $status, $data['status'], [], true); ?>
+                </div>
+            </div>
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mForm', 'cascader'], function () {
+        const mForm = layui.mForm
+        const cascader = layui.cascader
+
+        // 权限选择
+        const parentRule = cascader({
+            elem: '#rules',
+            clearable: true,
+            filterable: true,
+            collapseTags: true,
+            value: JSON.parse('<?=$groupRules?>'),
+            options: JSON.parse('<?=$rules?>'),
+            props: {
+                multiple: true,
+                value: 'id',
+                label: 'title',
+                children: 'children',
+                disabled: 'disabled'
+            }
+        });
+        // 渲染表单
+        mForm.render()
+        // 新增
+        mForm.submit('submit', function (res) {
+            // 父级存在刷新组别树方法，则刷新组别树
+            if (parent.renderLayTreeFun) {
+                parent.renderLayTreeFun(true)
+            }
+        }, null, function (form) {
+            // 整理选中的权限节点，代父级节点
+            const activeNodes = parentRule.getCheckedNodes()
+            let rules = []
+            activeNodes.forEach(node => {
+                rules.push(...getNodeValue(node))
+            });
+            return { rules: Array.from(new Set(rules)).join(',') }
+        })
+
+        // 递归获取节点的值
+        function getNodeValue(node) {
+            let value = [node.value];
+            if (node.parentNode) {
+                value.unshift(...getNodeValue(node.parentNode))
+            }
+
+            return value
+        }
+    })
+</script>
+<?php $this->blockEnd(); ?>

@@ -1,0 +1,96 @@
+.mon-comment-editor {
+    position: relative;
+    display: block;
+    top: 1px;
+    left: 0;
+    padding: 0 10px;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px 2px 0 0;
+    background-color: #FBFBFB;
+}
+
+.mon-comment-editor span {
+    cursor: pointer;
+    padding: 0 10px;
+    line-height: 38px;
+    color: #009E94;
+}
+
+.mon-comment-editor span i {
+    position: relative;
+    padding-right: 6px;
+    font-size: 18px;
+}
+
+.mon-comment-editor span:hover {
+    color: #5DB276;
+}
+
+.layui-edit-face {
+    border: none;
+    background: none;
+}
+
+.layui-edit-face .layui-layer-content {
+    padding: 0;
+    background-color: #fff;
+    color: #666;
+    box-shadow: none
+}
+
+.layui-edit-face .layui-layer-TipsG {
+    display: none;
+}
+
+.layui-edit-face ul {
+    position: relative;
+    width: 372px;
+    padding: 10px;
+    border: 1px solid #D9D9D9;
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+}
+
+.layui-edit-face ul li {
+    cursor: pointer;
+    float: left;
+    border: 1px solid #e8e8e8;
+    height: 22px;
+    width: 26px;
+    overflow: hidden;
+    margin: -1px 0 0 -1px;
+    padding: 4px 2px;
+    text-align: center;
+}
+
+.layui-edit-face ul li:hover {
+    position: relative;
+    z-index: 2;
+    border: 1px solid #eb7350;
+    background: #fff9ec;
+}
+
+.layui-edit-face ul li img {
+    width: 24px;
+    height: 24px;
+}
+
+.mon-comment-upload,
+.mon-comment-href,
+.mon-comment-container {
+    margin: 20px;
+}
+
+.mon-comment-container {
+    line-height: 28px;
+}
+
+.mon-comment-container pre {
+    padding: 10px 15px;
+    margin: 10px 0;
+    font-size: 12px;
+    border-left: 6px solid #009688;
+    background-color: #f8f8f8;
+    font-family: Courier New;
+    overflow: auto;
+}

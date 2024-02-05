@@ -1,0 +1,141 @@
+<?php $this->layout('page'); ?>
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <table id="region-table" lay-filter="region-table"></table>
+    </div>
+</div>
+
+<!-- 表格操作栏 -->
+<script type="text/html" id="region-toolbar">
+    <?php if($this->checkAuth('/sys/dictionary/region/add', $uid)): ?>
+    <button class="layui-btn layui-btn-sm layui-btn-success btn-add" lay-event="add" title="新增">
+        <i class="layui-icon layui-icon-add-1"></i>新增
+    </button> 
+    <?php endif; ?>
+    <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="expandAll">
+        <i class="layui-icon layui-icon-spread-left"></i>
+        展开
+    </button>
+    <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="foldAll">
+        <i class="layui-icon layui-icon-shrink-right"></i>
+        折叠
+    </button>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="region-oper">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/dictionary/region/add', $uid)): ?>
+        <!-- {{# if(d.status == 1){ }} -->
+        <button type="button" class="layui-btn layui-btn-success layui-btn-xs" lay-event="add">
+            <i class="layui-icon layui-icon-add-1"> 新增子项</i>
+        </button>
+        <!-- {{# } }} -->
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/dictionary/region/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-edit"> 编辑</i>
+        </button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['jquery', 'treeTable', 'mTable'], function () {
+        const treeTable = layui.treeTable
+        const mTable = layui.mTable
+        const $ = layui.jquery
+        const typeList = JSON.parse('<?=$type?>');
+
+        // 渲染菜单表格
+        treeTable.render({
+            id: 'region-table',
+            url: "<?=$this->url('/sys/dictionary/region')?>?isApi=1",
+            elem: '#region-table',
+            toolbar: '#region-toolbar',
+            defaultToolbar: [{
+                title: '刷新',
+                layEvent: 'refresh',
+                icon: 'layui-icon-refresh'
+            }, 'filter'],
+            skin: 'line',
+            page: false,
+            cols: [[
+                { field: 'id', title: 'ID', width: 80, align: 'center' },
+                { field: 'name', title: '名称', width: 320 },
+                { field: 'code', title: '编号', width: 120, align: 'center' },
+                {
+                    field: 'type', title: '类型', width: 90, align: 'center', templet: function (d) {
+                        return typeList[d.type] || '未知'
+                    }
+                },
+                { field: 'sort', title: '排序', width: 80, align: 'center' },
+                { field: 'status', title: '状态', width: 80, align: 'center', templet: mTable.format.status },
+                { title: '操作', minWidth: 220, templet: '#region-oper' }
+            ]],
+            response: {
+                statusName: 'code',
+                statusCode: 1,
+                msgName: 'msg',
+                countName: 'count',
+                dataName: 'data'
+            },
+            tree: {
+                view: {
+                    showIcon: false,
+                    dblClickExpand: false,
+                },
+                customName: {
+                    id: 'id',
+                    pid: 'pid',
+                    name: 'name'
+                },
+                data: {
+                    isSimpleData: true,
+                    rootPid: 0
+                }
+            },
+        });
+
+        // 绑定表格事件
+        mTable.bindEvent('region-table', {
+            // toolbar事件
+            toolbar: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/dictionary/region/add')?>",
+                    title: '新增菜单'
+                },
+                // 展开
+                expandAll: () => {
+                    // 只张开第一层
+                    const length = treeTable.getData('region-table').length || 99
+                    for (let i = 0; i < length; i++) {
+                        treeTable.expandNode('region-table', {
+                            index: i,
+                            expandFlag: true
+                        });
+                    }
+                },
+                // 折叠
+                foldAll: () => {
+                    treeTable.expandAll("region-table", false);
+                }
+            },
+            // 表格tool事件
+            tool: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/dictionary/region/add')?>",
+                    title: '新增子项'
+                },
+                edit: {
+                    url: "<?=$this->url('/sys/dictionary/region/edit')?>",
+                    title: '编辑'
+                }
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

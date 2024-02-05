@@ -1,0 +1,92 @@
+.send-container {
+    padding: 12px;
+}
+
+.send-header {
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.send-type {
+    width: 100%;
+    background: #fff;
+    padding: 12px 0;
+    margin-bottom: 12px;
+}
+
+.send-select-user {
+    width: 100%;
+    background: #fff;
+    margin-bottom: 12px;
+}
+
+.user-item {
+    padding: 6px 10px;
+    border: 1px solid #d2d2d2;
+    display: inline-block;
+    color: #5f5f5f;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: 2px;
+    font-size: 12px;
+    margin: 6px 0;
+    margin-right: 12px;
+}
+
+.user-item .user-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-item .user-item-content i {
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.select-user {
+    background: #fff;
+    margin-bottom: 12px;
+}
+
+.select-user-btn {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.select-group-user {
+    display: flex;
+    justify-content: space-between;
+}
+
+.select-group-user-tree {
+    width: 240px;
+    margin-right: 20px;
+}
+
+.select-group-user-tree-main {
+    background: #fff;
+    padding: 12px;
+}
+
+.select-group-user-send {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.select-group-user-send-main {
+    background: #fff;
+    padding: 12px;
+}
+
+.select-group {
+    background: #fff;
+}
+
+.select-group-oper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

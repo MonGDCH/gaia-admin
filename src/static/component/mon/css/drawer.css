@@ -1,0 +1,35 @@
+/* drawer 抽屉 iframe */
+.mon-drawer {
+    min-width: 680px;
+}
+
+.mon-drawer .layui-layer-footer,
+.mon-dialog .layui-layer-footer {
+    background: #fff;
+    position: absolute;
+    padding-top: 14px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.mon-action-container {
+    margin-bottom: 72px;
+}
+
+.mon-search-bar-btn {
+    cursor: pointer;
+}
+
+.mon-search-bar-btn:active {
+    background: #eee;
+}
+
+.mon-search-bar-btn:hover {
+    opacity: .8;
+    /* background: #ddd; */
+}
+
+.page-card {
+    margin-bottom: 86px;
+}

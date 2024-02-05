@@ -1,0 +1,202 @@
+<?php $this->layout('page'); ?>
+
+<!-- 搜索 -->
+<div class="search-panel" id="search-form">
+    <form class="layui-form" lay-filter="search">
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" placeholder="搜索名称" class="layui-input" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务类型</label>
+            <div class="layui-input-block">
+                <?=$this->build_select('type', $type, [], [], true, true)?>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务状态</label>
+            <div class="layui-input-block">
+                <?=$this->build_select('status', $status, [], [], true, true)?>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上次执行</label>
+            <div class="layui-input-block">
+                <input type="text" name="last_running_time" placeholder="搜索上次执行时间" class="layui-input date-range"
+                    autocomplete="off">
+            </div>
+        </div>
+    </form>
+</div>
+
+<blockquote class="layui-elem-quote layui-bg-white layui-font-13">
+    <div class="layui-font-red">定时任务的启用、停止、重载都是在下一分钟才会生效！</div>
+    <div class="layui-font-red">启动中的定时任务除修改“备注信息”外，修改其它内容都是在下一分钟才会生效！</div>
+    <div>当前定时任务运行状态： <span id="status"><i class="layui-icon layui-icon-help"></i></span> </div>
+</blockquote>
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table"></table>
+    </div>
+</div>
+
+<!-- 表格操作栏 -->
+<script type="text/html" id="toolbar">
+    <?= $this->build_toolbar('/sys/dev/crontab', $uid, ['add', 'search', 'reset']); ?>
+    <?php if($this->checkAuth('/sys/dev/crontab/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="pool">查看运行任务</button>
+    <?php endif; ?>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/dev/crontab/reload', $uid)): ?>
+        <button type="button" class="layui-btn layui-bg-orange layui-btn-xs" lay-event="reload">重载任务</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/dev/crontab/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑任务</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/dev/crontab/log', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" lay-event="log">任务日志</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['http', 'mTable', 'mForm', 'common', 'action'], function () {
+        const http = layui.http
+        const mTable = layui.mTable
+        const mForm = layui.mForm
+        const common = layui.common
+        const action = layui.action
+        const typeList = JSON.parse('<?=$typeList?>')
+        const logList = JSON.parse('<?=$logList?>')
+        const statusList = JSON.parse('<?=$statusList?>')
+        const singletonList = JSON.parse('<?=$singletonList?>')
+
+
+        // 运行状态
+        http.get("<?=$this->url('/sys/dev/crontab/ping')?>", {}, { loading: false }).then(ret => {
+            const el = document.querySelector('#status')
+            if (ret.code == '1') {
+                el.innerHTML = '已启动'
+                el.classList.add('layui-badge', 'layui-bg-green')
+            } else {
+                el.innerHTML = '未启动'
+                el.classList.add('layui-badge')
+            }
+        })
+        // 渲染搜索表单
+        mForm.render()
+        // 渲染表格
+        mTable.render({
+            elem: '#table',
+            url: "<?=$this->url('/sys/dev/crontab')?>?isApi=1",
+            cols: [[
+                { field: 'id', title: 'ID', width: 60, align: 'center' },
+                { field: 'type', title: '任务类型', width: 120, align: 'center', templet: d => typeList[d.type] || '未知' },
+                { field: 'rule', title: 'Cron表达式', width: 160, align: 'center' },
+                { field: 'title', title: '名称', width: 180 },
+                { field: 'singleton', title: '执行频率', width: 90, align: 'center', templet: d => singletonList[d.singleton] || '未知' },
+                { field: 'last_running_time', title: '上次执行时间', width: 160, align: 'center', templet: function (d) { return mTable.format.dateTime(d.last_running_time) } },
+                { field: 'running_times', title: '执行次数', width: 90, align: 'center' },
+                { field: 'status', title: '状态', width: 80, align: 'center', templet: function (d) { return mTable.format.statusIcon(d.status) + ' ' + statusList[d.status] } },
+                { field: 'status', title: '日志', width: 80, align: 'center', templet: function (d) { return mTable.format.statusIcon(d.savelog) + ' ' + logList[d.savelog] } },
+                { field: 'create_time', title: '创建时间', width: 160, align: 'center', templet: d => mTable.format.dateTime(d.create_time), sort: true },
+                { field: 'operate', title: '操作', templet: '#operate', minWidth: 240, fixed: 'right' }
+            ]]
+        })
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            // toolbar事件
+            toolbar: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/dev/crontab/add')?>",
+                    title: '新增任务',
+                },
+                // 搜索
+                search: function (data) {
+                    if (data.last_running_time) {
+                        let iLast_running_time = data.last_running_time.split(' - ')
+                        data.start_time = common.strtotime(iLast_running_time[0] + ' 00:00:00')
+                        data.end_time = common.strtotime(iLast_running_time[1] + ' 23:59:59')
+                    }
+
+                    return data
+                },
+                // 查看运行任务
+                pool: async function () {
+                    const url = "<?=$this->url('/sys/dev/crontab/pool')?>"
+                    const res = await http.get(url)
+                    if (res.code != '1') {
+                        layer.msg(res.msg, { icon: 2 })
+                        return;
+                    }
+
+                    // 查看
+                    layer.open({
+                        type: 1,
+                        title: `运行中的任务`,
+                        area: ['680', '540px'],
+                        content: '<div style="padding: 0 12px"><table id="task-table"></table></div>',
+                        shadeClose: true,
+                        moveOut: true,
+                        scrollbar: false,
+                        resize: false,
+                        maxHeight: 480,
+                        success: function (layero, index) {
+                            mTable.render({
+                                id: 'task-table',
+                                elem: '#task-table',
+                                toolbar: false,
+                                data: res.data,
+                                cols: [[
+                                    { field: 'id', title: 'ID', width: 60, align: 'center' },
+                                    { field: 'type', title: '任务类型', width: 120, align: 'center', templet: d => typeList[d.type] || '未知' },
+                                    { field: 'title', title: '名称', width: 180 },
+                                    { field: 'create_time', title: '创建时间', minWidth: 160, align: 'center' },
+                                ]]
+                            })
+
+                        }
+                    })
+                }
+            },
+            // tool事件
+            tool: {
+                // 编辑
+                edit: {
+                    url: "<?=$this->url('/sys/dev/crontab/edit')?>",
+                    title: '编辑任务',
+                },
+                // 重载任务
+                reload: function (data) {
+                    layer.confirm(`确定重载该任务【${data.title}】么？`, { icon: 3, title: 'Tips' }, async function (index) {
+                        layer.close(index)
+                        const url = "<?=$this->url('/sys/dev/crontab/reload')?>"
+                        const res = await http.post(url, { crontab_id: data.id })
+                        if (res.code != '1') {
+                            layer.msg(res.msg, { icon: 2 })
+                            return;
+                        }
+
+                        layer.msg(res.msg, { icon: 1 })
+                    });
+                },
+                // 查看日志
+                log: function (data) {
+                    const url = "<?=$this->url('/sys/dev/crontab/log')?>" + '?crontab_id=' + data.id
+                    action.drawer(url, '任务运行日志')
+                }
+            },
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

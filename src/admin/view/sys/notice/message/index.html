@@ -1,0 +1,258 @@
+<?php $this->layout('page'); ?>
+
+<div class="sub-menu-container" id="app">
+    <div class="sub-menu">
+        <div class="sub-menu-item" v-for="item in statusList">
+            <a href="javascript:;" :class="[item.status == status ? 'active' : '']" @click="status = item.status">
+                <i :class="['sub-menu-icon', 'layui-icon', item.icon]"></i>
+                <span v-text="item.title"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="sub-menu-main">
+        <!-- <div class="sub-menu-main-content"> -->
+        <div class="search-panel" id="search-form">
+            <form class="layui-form" lay-filter="search">
+                <input type="hidden" name="status" :value="status">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">消息标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索消息标题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">消息类型</label>
+                    <div class="layui-input-block">
+                        <?=$this->build_select('type', $type, [])?>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">创建人</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="username" placeholder="搜索创建人" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" v-show="status == statusEmun['publish']">
+                    <label class="layui-form-label">发送时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="send_time" placeholder="搜索发送时间" class="layui-input date-range">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="sub-menu-main-content">
+            <table id="table"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 草稿箱操作 -->
+<script type="text/html" id="draft-toolbar">
+    <?= $this->build_toolbar('/sys/notice/message', $uid, ['add', 'search', 'reset']); ?>
+</script>
+<!-- 操作 -->
+<script type="text/html" id="draft-operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/notice/message/send', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-xs" lay-event="send">发送消息</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/notice/message/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑消息</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/notice/message/toggle', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-idx="{{ d.id }}" data-url="<?=$this->url('/sys/notice/message/toggle')?>" data-title="确认删除该消息么？" data-status="0" lay-event="confirm">删除消息</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<!-- 发件箱、回收站操作栏 -->
+<script type="text/html" id="toolbar">
+    <?= $this->build_toolbar('/sys/notice/message', $uid, ['search', 'reset']); ?>
+</script>
+
+<!-- 回收站操作 -->
+<script type="text/html" id="delete-operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/notice/message/toggle', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-idx="{{ d.id }}" data-url="<?=$this->url('/sys/notice/message/toggle')?>" data-title="确认恢复该消息么？" data-status="1" lay-event="confirm">恢复消息</button>
+        <?php endif; ?>
+    </div>
+</script>
+
+<!-- 发件箱操作 -->
+<script type="text/html" id="send-operate">
+    <div class="oper-btns">
+        <button type="button" class="layui-btn layui-btn-xs" lay-event="receive">查看收件人</button>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script src="<?=$this->assets('static/component/vue/vue.v3.js') ?>"></script>
+<script>
+    // 默认类型
+    const defaultStatus = '1'
+    layui.use(['mTable', 'mForm', 'common', 'action'], function () {
+        const mTable = layui.mTable
+        const mForm = layui.mForm
+        const common = layui.common
+        const action = layui.action
+        const { createApp, ref, watch, onMounted } = Vue
+        const statusEmun = JSON.parse('<?=$status?>')
+
+        createApp({
+            setup() {
+                // 菜单列表
+                const statusList = [
+                    { status: statusEmun['draft'], title: '草稿箱', icon: 'layui-icon-email' },
+                    { status: statusEmun['publish'], title: '发件箱', icon: 'layui-icon-release' },
+                    { status: statusEmun['remove'], title: '回收站', icon: 'layui-icon-delete' },
+                ]
+                // 当前状态
+                const status = ref(defaultStatus)
+                // 监听状态编号
+                watch(status, (now, prev) => {
+                    renderTable(now)
+                    document.querySelector('#reset-btn') && document.querySelector('#reset-btn').click()
+                })
+
+                // 初始化
+                onMounted(() => {
+                    renderTable(defaultStatus)
+                })
+
+                return { statusList, status, statusEmun }
+            }
+        }).mount('#app')
+
+        // 预览站内信
+        window.preview = (id) => {
+            let url = "<?=$this->url('/sys/notice/message')?>?read=" + id
+            action.dialog(url, `预览`)
+        }
+
+        // 渲染搜索表单
+        mForm.render()
+
+        // 渲染表格
+        function renderTable(status) {
+            let toolbar = status == statusEmun['draft'] ? '#draft-toolbar' : '#toolbar'
+            let cols = [
+                { field: 'id', title: 'ID', width: 80, align: 'center' },
+                { field: 'type_name', title: '消息类型', width: 120, align: 'center' },
+                { field: 'img', title: '类型封面', width: 100, align: 'center', templet: d => mTable.format.image(d.img) },
+                { field: 'title', title: '消息标题', minWidth: 200, templet: d => `<a href="javascript:;" class="mon-link" onclick="preview('${d.id}')">${d.title}</a>` }
+            ]
+            if (status == statusEmun['draft']) {
+                // 草稿
+                cols.push(
+                    { field: 'update_time', title: '编辑时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.update_time) },
+                    { field: 'create_time', title: '创建时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.create_time) },
+                    { field: 'username', title: '创建人', width: 120, align: 'center' },
+                    { title: '操作', templet: '#draft-operate', width: 240 }
+                )
+            } else if (status == statusEmun['remove']) {
+                // 回收站
+                cols.push(
+                    { field: 'update_time', title: '删除时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.update_time) },
+                    { field: 'create_time', title: '创建时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.create_time) },
+                    { field: 'username', title: '创建人', width: 120, align: 'center' },
+                    { title: '操作', align: 'center', templet: '#delete-operate', width: 100 }
+                )
+            } else if (status == statusEmun['publish']) {
+                // 发送
+                cols.push(
+                    { field: 'send_user', title: '发送人', width: 120, align: 'center' },
+                    { field: 'send_time', title: '发送时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.send_time) },
+                    { title: '操作', align: 'center', templet: '#send-operate', width: 100 }
+                )
+            }
+            mTable.render({
+                elem: '#table',
+                url: "<?=$this->url('/sys/notice/message')?>?isApi=1",
+                where: { status: status },
+                toolbar: toolbar,
+                cols: [cols]
+            })
+        }
+
+        // 转化搜索数据
+        function formatSearchData(data) {
+            // 创建时间
+            if (data.create_time) {
+                let iCreate_time = data.create_time.split(' - ')
+                data.start_time = common.strtotime(iCreate_time[0] + ' 00:00:00')
+                data.end_time = common.strtotime(iCreate_time[1] + ' 23:59:59')
+            }
+            // 发送时间
+            if (data.send_time) {
+                let iSend_time = data.send_time.split(' - ')
+                data.send_start_time = common.strtotime(iSend_time[0] + ' 00:00:00')
+                data.send_end_time = common.strtotime(iSend_time[1] + ' 23:59:59')
+            }
+
+            return data
+        }
+
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            // sort事件
+            sort: formatSearchData,
+            // toolbar事件
+            toolbar: {
+                // 新增
+                add: {
+                    url: "<?=$this->url('/sys/notice/message/add')?>",
+                    title: '新增消息'
+                },
+                // 搜索按钮
+                search: formatSearchData
+            },
+            // tool事件
+            tool: {
+                // 编辑
+                edit: {
+                    url: "<?=$this->url('/sys/notice/message/edit')?>",
+                    title: '编辑消息'
+                },
+                // 发送
+                send: (data, table) => {
+                    let url = "<?=$this->url('/sys/notice/message/send')?>" + `?idx=${data.id}`
+                    action.drawer(url, `发布消息【${data.title}】`)
+                },
+                // 查看收件人
+                receive: (data, table) => {
+                    layer.open({
+                        type: 1,
+                        title: `【${data.title}】收件人`,
+                        area: ['768px', '640px'],
+                        content: '<div style="padding: 0 12px"><table id="send-table"></table></div>',
+                        shadeClose: true,
+                        moveOut: true,
+                        scrollbar: false,
+                        resize: false,
+                        maxHeight: 560,
+                        success: function (layero, index) {
+                            mTable.render({
+                                id: 'send-table',
+                                elem: '#send-table',
+                                url: "<?=$this->url('/sys/notice/message')?>",
+                                where: { send: data.id },
+                                toolbar: true,
+                                cols: [[
+                                    { field: 'receive_id', title: 'ID', width: 80, align: 'center' },
+                                    { field: 'username', title: '用户名', minWidth: 120 },
+                                    { field: 'avatar', title: '头像', width: 80, align: 'center', templet: function (d) { return mTable.format.avatar(d.avatar) } },
+                                    { field: 'status', title: '状态', width: 100, align: 'center', templet: function (d) { return mTable.format.status(d.status) } },
+                                ]]
+                            })
+                            mTable.bindEvent('send-table')
+                        }
+                    })
+                }
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

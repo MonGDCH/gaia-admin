@@ -1,0 +1,363 @@
+<?php $this->layout('page'); ?>
+
+<?php $this->block('css'); ?>
+<link rel="stylesheet" href="<?=$this->assets('static/css/notice.css') ?>" />
+<?php $this->blockEnd(); ?>
+
+<div id="app">
+    <!-- 选择收件人类型 -->
+    <div class="send-type">
+        <div class="layui-form">
+            <label class="layui-form-label">发送方式：</label>
+            <div class="layui-input-block">
+                <label v-for="(item, index) in typeList">
+                    <input type="radio" name="type" :value="index" :title="item" :checked="index == type"
+                        @click="changeType(index)">
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- 已选择收件人 -->
+    <div class="send-select-user">
+        <div class="send-container">
+            <div class="send-header">已选择</div>
+            <div class="send-select-main" v-if="userList.length > 0">
+                <div class="user-item" v-for="(item, index) in userList">
+                    <div class="user-item-content">
+                        <span>{{item.title}}</span>
+                        <i class="layui-icon layui-icon-close" @click="removeSelectUser(index)"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" v-else>{{type == sendTypeEmun['all'] ? '全部用户' : '暂无'}}</div>
+
+        </div>
+    </div>
+
+    <!-- 指定用户 -->
+    <div class="select-user" v-show="type == sendTypeEmun['user']">
+        <div class="send-container">
+            <div class="send-header">选择指定用户</div>
+            <div id="xmSelect-user"></div>
+            <div class="select-user-btn">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-success" @click="submit">确认收件人</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 指定角色用户 -->
+    <div class="select-group-user" v-show="type == sendTypeEmun['role']">
+        <div class="select-group-user-tree">
+            <div class="select-group-user-tree-main">
+                <div id="selectGroupUserTree">加载角色组别数据中...</div>
+            </div>
+        </div>
+        <div class="select-group-user-send">
+            <div class="select-group-user-send-main">
+                <table id="table" lay-filter="table"></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 指定组别 -->
+    <div class="select-group" v-show="type == sendTypeEmun['group']">
+        <div class="send-container">
+            <div class="send-header select-group-oper">
+                <span>选择角色组别</span>
+                <button type="button" class="layui-btn layui-btn-sm" @click="submit">添加收件组别</button>
+            </div>
+            <div class="layui-form">
+                <input v-for="item in groupList" type="checkbox" class="group-list" :value="item.id"
+                    :title="item.title" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表单提交 -->
+<div class="layui-form-item layer-footer hidden">
+    <div class="layui-input-block text-left">
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-success" id="send">确认发送</button>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="cancel">取消</button>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script src="<?=$this->assets('static/component/vue/vue.v3.js') ?>"></script>
+<script>
+    layui.use(['mForm', 'http', 'tree', 'xmSelect', 'mTable'], function () {
+        const mForm = layui.mForm
+        const http = layui.http
+        const tree = layui.tree
+        const xmSelect = layui.xmSelect
+        const mTable = layui.mTable
+        const { createApp, ref, watch, onMounted } = Vue
+        const sendTypeEmun = JSON.parse('<?=$sendType?>')
+        const sendTypeTitleEmun = JSON.parse('<?=$sendTypeTitle?>')
+
+        createApp({
+            setup() {
+                // 发送用户
+                const userList = ref([])
+                // 发送类型
+                const typeList = sendTypeTitleEmun
+                // 组别列表
+                const groupList = ref([]);
+                // 当前状态
+                const type = ref(0)
+                // 修改状态
+                function changeType(index) {
+                    type.value = index
+                }
+                // 监听类型变化
+                watch(type, (now, priv) => {
+                    if (now != sendTypeEmun['user']) {
+                        // 非指定用户，清空选中的用户
+                        xmSelect.get('#xmSelect-user')[0].setValue([])
+                    }
+                    if (now != sendTypeEmun['group']) {
+                        // 非指定组别，清空选中的组别
+                        let el = document.querySelectorAll('input.group-list')
+                        el && el.forEach(e => {
+                            e.checked = false
+                        })
+                        mForm.render()
+                    }
+                    userList.value = []
+                })
+
+                // 指定用户确认收件人
+                const submit = () => {
+                    let users = []
+                    switch (type.value) {
+                        case sendTypeEmun['user']:
+                            // 指定用户
+                            users = xmSelect.get('#xmSelect-user')[0].getValue().map(item => {
+                                return { id: item.value, title: item.name }
+                            })
+                            break;
+                        case sendTypeEmun['group']:
+                            // 指定组别
+                            let el = document.querySelectorAll('input.group-list')
+                            el && el.forEach(e => {
+                                if (e.checked) {
+                                    users.push({ id: e.value, title: e.title })
+                                }
+                            })
+                            mForm.render('checkbox')
+                            break;
+                    }
+
+                    userList.value = users
+                }
+                // 删除已选择的用户
+                const removeSelectUser = (index) => {
+                    userList.value = userList.value.filter((item, i) => {
+                        return i != index
+                    })
+                }
+
+                // 渲染指定角色组
+                const renderGroupList = async () => {
+                    const ret = await http.ajax({
+                        url: "<?=$this->url('/sys/notice/message/send')?>",
+                        method: 'GET',
+                        params: {
+                            idx: "<?=$data['id']?>",
+                            type: 'groupList',
+                        }
+                    })
+                    if (ret.code != '1') {
+                        return layer.msg(ret.msg, { icon: 2 })
+                    }
+
+                    groupList.value = ret.data
+                }
+
+                // 构造方法
+                onMounted(async () => {
+                    // 渲染指定用户
+                    renderSelectUser()
+                    // 渲染用户表格
+                    renderGroupUserTable()
+                    // 渲染角色用户树
+                    await renderSelectGroupUser()
+                    // 渲染角色组
+                    await renderGroupList()
+                    // 渲染表单
+                    mForm.render()
+                    // 绑定表格事件
+                    mTable.bindEvent('table', {
+                        toolbar: {
+                            // 添加收件人
+                            send: (d, table) => {
+                                let data = table.checkStatus('table').data
+                                data.filter(item => {
+                                    return userList.value.find(u => u.id == item.id) == undefined
+                                }).forEach(item => {
+                                    userList.value.push({ title: item.username, ...item })
+                                })
+                            }
+                        }
+                    })
+
+                    // 绑定提交事件，按钮不能在 #app 中，否则事件无法透传
+                    document.querySelector('#send').addEventListener('click', (e) => {
+                        // 非全部用户，且用户列表为空，需要选择用户
+                        if (type.value != sendTypeEmun['all'] && userList.value.length == 0) {
+                            return layer.msg('请先选择收件人', { icon: 2 })
+                        }
+                        layer.confirm('发送后不可撤销，确认发送？', { icon: 3, title: 'Tips' }, function (index) {
+                            layer.close(index)
+                            let ids = userList.value.map(item => item.id).join(',')
+                            let queryData = {
+                                idx: "<?=$data['id']?>",
+                                type: type.value,
+                                ids: ids
+                            }
+                            http.ajax({
+                                url: "<?=$this->url('/sys/notice/message/send')?>",
+                                method: 'POST',
+                                data: queryData
+                            }).then(ret => {
+                                if (ret.code != '1') {
+                                    return layer.msg(ret.msg, { icon: 2 })
+                                }
+
+                                // 存在iframe，操作iframe
+                                if (parent !== self) {
+                                    // 存在刷新按钮，且已绑定事件，则刷新上级table
+                                    parent.document.querySelectorAll('.layui-table-tool [lay-event="refresh"]').forEach(el => {
+                                        el.click()
+                                    })
+
+                                    // 关闭弹层
+                                    let i = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(i);
+                                }
+
+                                parent.layer.msg(ret.msg, { icon: 1 })
+                            })
+
+                            return false
+                        })
+                    })
+                    // 取消关闭
+                    document.querySelector('#cancel').addEventListener('click', (e) => {
+                        if (parent !== self) {
+                            // 关闭弹层
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                    })
+                })
+
+                return { userList, type, typeList, groupList, sendTypeEmun, changeType, submit, removeSelectUser }
+            }
+        }).mount('#app')
+
+        // 指定用户xm-select渲染
+        function renderSelectUser() {
+            const selectUser = xmSelect.render({
+                el: '#xmSelect-user',
+                tips: '请搜索选择收件用户',
+                searchTips: '输入用户名搜索',
+                height: '300px',
+                autoRow: true,
+                toolbar: { show: true },
+                filterable: true,
+                remoteSearch: true,
+                remoteMethod: async (val, cb, show) => {
+                    // 这里如果val为空, 则不触发搜索
+                    if (!val) {
+                        return cb([]);
+                    }
+
+                    try {
+                        const { code, data, msg } = await http.ajax({
+                            url: "<?=$this->url('/sys/notice/message/send')?>",
+                            method: 'GET',
+                            params: {
+                                idx: "<?=$data['id']?>",
+                                type: 'user',
+                                username: val
+                            }
+                        })
+
+                        if (code != '1') {
+                            cb([])
+                            return layer.msg(msg, { icon: 2 })
+                        }
+
+                        cb(data)
+                    } catch (err) {
+                        console.error(err)
+                        cb([]);
+                    }
+                },
+            })
+        }
+
+        // 指定角色组别树渲染
+        async function renderSelectGroupUser() {
+            const ret = await http.ajax({
+                url: "<?=$this->url('/sys/notice/message/send')?>",
+                method: 'GET',
+                params: {
+                    idx: "<?=$data['id']?>",
+                    type: 'group',
+                }
+            })
+
+            if (ret.code != '1') {
+                return layer.msg(ret.msg, { icon: 2 })
+            }
+
+            // 渲染
+            let data = ret.data.map(item => {
+                item.spread = true
+                return item
+            })
+            // 组别用户选择树
+            tree.render({
+                id: 'selectGroupUserTree',
+                elem: '#selectGroupUserTree',
+                data: data,
+                onlyIconControl: true,
+                accordion: true,
+                text: {
+                    defaultNodeName: '未命名',
+                    none: '无数据'
+                },
+                click: function (obj) {
+                    const data = obj.data
+                    renderGroupUserTable(data.id)
+                }
+            });
+        }
+
+        // 指定角色组别表格渲染
+        function renderGroupUserTable(group) {
+            mTable.render({
+                elem: '#table',
+                url: "<?=$this->url('/sys/notice/message/send')?>",
+                where: {
+                    isApi: 1,
+                    idx: "<?=$data['id']?>",
+                    type: 'groupUser',
+                    group: group
+                },
+                page: false,
+                text: { none: '无数据或请先选择组别' },
+                toolbar: '<div><button class="layui-btn layui-btn-sm" lay-event="send"><i class="layui-icon layui-icon-add"></i>添加收件人</button></div>',
+                cols: [[
+                    { type: 'checkbox' },
+                    { field: 'id', title: 'ID', width: 80, align: 'center' },
+                    { field: 'avatar', title: '头像', width: 80, align: 'center', templet: function (d) { return mTable.format.avatar(d.avatar) } },
+                    { field: 'username', title: '用户名', minWidth: 120 },
+                ]]
+            });
+        }
+    })
+</script>
+<?php $this->blockEnd(); ?>

@@ -1,0 +1,164 @@
+<?php $this->layout('page'); ?>
+
+<?php $this->block('css'); ?>
+<style>
+    .source-img-box {
+        height: 325px;
+        background-color: rgb(247, 247, 247);
+    }
+
+    #preview-img {
+        width: 210px;
+        height: 210px;
+        border: 1px solid rgb(200, 200, 200);
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    #cropper-oper {
+        width: auto;
+        vertical-align: top;
+        margin-top: 4px;
+    }
+</style>
+<?php $this->blockEnd(); ?>
+
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs9">
+        <div class="source-img-box">
+            <img id="source-img" src="" />
+        </div>
+    </div>
+    <div class="layui-col-xs3" style="padding-left:0px;">
+        <div id="preview-img"></div>
+    </div>
+</div>
+<div class="layui-row">
+    <div class="layui-form-item">
+        <div class="layui-input-inline layui-btn-container" id="cropper-oper">
+            <button class="layui-btn layui-btn-sm layui-btn-primary layui-icon layui-icon-left" cropper-event="rotate"
+                data-option="-15" title="左旋15°"></button>
+            <button class="layui-btn layui-btn-sm layui-btn-primary layui-icon layui-icon-right" cropper-event="rotate"
+                data-option="15" title="右旋15°"></button>
+            <button class="layui-btn layui-btn-sm layui-btn-danger layui-icon layui-icon-refresh" cropper-event="reset"
+                title="重置"></button>
+            <label for="uploadPicture" class="layui-btn layui-btn-sm layui-btn-primary layui-icon layui-icon-upload"
+                title="选择图片"></label>
+            <input class="layui-upload-file" id="uploadPicture" type="file" value="选择图片">
+        </div>
+        <div class="layui-form-mid layui-word-aux">建议：图片的尺寸宽高比为1:1，大小在5m以内。</div>
+    </div>
+</div>
+
+<div class="layui-form-item layer-footer hidden">
+    <div class="layui-input-block">
+        <button class="layui-btn layui-btn-sm layui-btn-success" id="confirm-btn">确定</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['jquery', 'cropper', 'http', 'layer'], function ($, cropper, http, layer) {
+
+        const options = {
+            // 裁剪框比例
+            aspectRatio: 1 / 1,
+            // 预览div
+            preview: '#preview-img',
+            viewmode: 1
+        };
+        // 获取图片路径
+        // let src = parent.layui.$("#user-avatar").attr("src")
+        let src = "<?=$userInfo['avatar']; ?>"
+        $("#source-img").attr("src", src)
+        // 注册图片裁剪服务
+        $("#source-img").cropper(options);
+
+        // 绑定按钮事件
+        $(".layui-btn", '#cropper-oper').on('click', function () {
+            let event = $(this).attr("cropper-event");
+            if (event === 'rotate') {
+                // 旋转
+                let option = $(this).attr('data-option');
+                $("#source-img").cropper('rotate', option);
+            } else if (event === 'reset') {
+                // 重置
+                $("#source-img").cropper('reset');
+            }
+
+            // 重新上传图片
+            $("#uploadPicture").change(function () {
+                let r = new FileReader();
+                let f = this.files[0];
+
+                let uploadFileSize = f.size / 1024;
+                if (uploadFileSize > 5120) {
+                    parent.layer.msg("上传文件不得超过5M", { icon: 5 });
+                    return false;
+                }
+
+                r.readAsDataURL(f);
+                r.onload = function (e) {
+                    $("#source-img").cropper('destroy').attr('src', this.result).cropper(options);
+                };
+            });
+        });
+
+        // 关闭弹窗
+        $('#cancel-btn').on('click', function () {
+            let index = parent.layer.getFrameIndex(window.name)
+            parent.layer.close(index)
+        })
+
+        // 确认修改
+        $('#confirm-btn').on('click', function () {
+            $("#source-img").crossOrigin = 'anonymous';//解决跨域图片问题
+            $("#source-img").cropper("getCroppedCanvas", {
+                width: 280,
+                height: 140
+            }).toBlob(async function (blob) {
+                // 表单数据
+                let timeStamp = Date.parse(new Date());
+                let fileName = timeStamp + '.jpg';
+                let formData = new FormData();
+                formData.append('file', blob, fileName);
+                formData.append('fileName', fileName);
+                formData.append('fileToken', timeStamp);
+
+                // 上传保存头像图片
+                const upload = await http.ajax({
+                    url: "<?= $this->url('/upload') ?>",
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    data: formData
+                })
+                // 修改用户信息
+                const ret = await http.ajax({
+                    url: "<?= $this->url('/profile/editInfo') ?>",
+                    method: 'post',
+                    data: {
+                        avatar: upload.data[0].url
+                    }
+                })
+                if (ret.code != 1) {
+                    layer.msg(ret.msg, { icon: 2 });
+                    return;
+                }
+
+                // 更新父页面头像地址
+                let reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onload = function (e) {
+                    parent.layui.$("#user-avatar").attr('src', e.target.result)
+                    // 关闭弹窗
+                    let index = parent.layer.getFrameIndex(window.name)
+                    parent.layer.close(index)
+                };
+            });
+        })
+    });
+</script>
+<?php $this->blockEnd(); ?>

@@ -1,0 +1,174 @@
+<?php $this->layout('page'); ?>
+
+<div class="sub-menu-container" id="app">
+    <div class="sub-menu">
+        <div class="sub-menu-item" v-for="(item, index) in typeList">
+            <a href="javascript:;" :class="[index == type ? 'active' : '']" @click="type = index">
+                <i :class="['sub-menu-icon', 'layui-icon', item.icon]"></i>
+                <span v-text="item.title"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="sub-menu-main">
+        <div class="sub-menu-main-content">
+            <div v-show="type == 0">
+                <table id="sys-table"></table>
+            </div>
+            <div v-show="type == 1">
+                <table id="user-table"></table>
+            </div>
+            <div v-show="type == 2">
+                <table id="send-table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="send-toolbar">
+    <?php if($userInfo['sender'] == 1): ?>
+    <div class="oper-btns">
+        <button class="layui-btn layui-btn-sm" lay-event="send"><i class="layui-icon layui-icon-release"></i> 发送消息</button>
+    </div>
+    <?php endif; ?>
+</script>
+
+<!-- 用户回复操作 -->
+<script type="text/html" id="user-operate">
+    <?php if($userInfo['sender'] == 1): ?>
+    <div class="oper-btns">
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="reply"><i class="layui-icon layui-icon-release"></i> 回复消息</button>
+    </div>
+    <?php endif; ?>
+</script>
+
+<?php $this->block('js'); ?>
+<script src="<?=$this->assets('static/component/vue/vue.v3.js') ?>"></script>
+<script>
+    layui.use(['mTable', 'action'], function () {
+        const mTable = layui.mTable
+        const action = layui.action
+        const { createApp, ref, watch, onMounted } = Vue
+
+        createApp({
+            setup() {
+                // 菜单列表
+                const typeList = [
+                    { title: '系统通知', icon: 'layui-icon-email' },
+                    { title: '用户消息', icon: 'layui-icon-username' },
+                    { title: '发件箱', icon: 'layui-icon-release' },
+                ]
+                // 当前状态
+                const type = ref(0)
+                // 监听状态编号
+                watch(type, (now, prev) => {
+                    render(now)
+                })
+
+                // 初始化
+                onMounted(() => {
+                    render(type.value)
+                })
+
+                return { typeList, type }
+            }
+        }).mount('#app')
+
+        // 渲染表格
+        function render(type) {
+            switch (type) {
+                case 0:
+                    renderSys()
+                    break;
+                case 1:
+                    renderUsre()
+                    break;
+                case 2:
+                    renderSend()
+                    break;
+            }
+        }
+
+        // 渲染系统通知
+        function renderSys() {
+            mTable.render({
+                id: 'sys-table',
+                elem: '#sys-table',
+                url: "<?=$this->url('/msg')?>" + '?isApi=1&cate=0',
+                cols: [[
+                    { field: 'message_id', title: 'ID', width: 80, align: 'center' },
+                    { field: 'type_name', title: '消息类型', width: 120, align: 'center' },
+                    { field: 'title', title: '消息标题', minWidth: 240, templet: d => `<a href="javascript:;" class="mon-link" onclick="read('${d.id}', this)">${d.title}</a>` },
+                    { field: 'send_time', title: '发送时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.send_time) },
+                    { field: 'read_time', title: '查阅时间', width: 168, align: 'center', templet: d => mTable.format.dateTime(d.read_time) },
+                ]]
+            })
+        }
+
+        // 渲染用户私信
+        function renderUsre() {
+            mTable.render({
+                id: 'user-table',
+                elem: '#user-table',
+                url: "<?=$this->url('/msg')?>" + '?isApi=1&cate=1',
+                cols: [[
+                    { field: 'message_id', title: 'ID', width: 80, align: 'center' },
+                    { field: 'username', title: '发信人', width: 160, align: 'center' },
+                    { field: 'title', title: '消息标题', minWidth: 240, templet: d => `<a href="javascript:;" class="mon-link" onclick="read('${d.id}', this)">${d.title}</a>` },
+                    { field: 'send_time', title: '发送时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.send_time) },
+                    { field: 'read_time', title: '查阅时间', width: 168, align: 'center', templet: d => mTable.format.dateTime(d.read_time) },
+                    { title: '操作', templet: '#user-operate', width: 200 }
+                ]]
+            })
+        }
+
+        // 渲染发件箱
+        function renderSend() {
+            mTable.render({
+                id: 'send-table',
+                elem: '#send-table',
+                url: "<?=$this->url('/msg')?>" + '?isApi=1&cate=2',
+                toolbar: '#send-toolbar',
+                cols: [[
+                    { title: 'ID', field: 'id', width: 80, align: 'center' },
+                    { field: 'receive_user', title: '收件人', width: 160, align: 'center' },
+                    { field: 'send_time', title: '发送时间', width: 168, align: 'center', sort: true, templet: d => mTable.format.dateTime(d.send_time) },
+                    { field: 'title', title: '消息标题', minWidth: 240, templet: d => `<a href="javascript:;" class="mon-link" onclick="preview('${d.id}', this)">${d.title}</a>` },
+                ]]
+            })
+        }
+
+        // 绑定事件
+        mTable.bindEvent('sys-table')
+        mTable.bindEvent('user-table', {
+            tool: {
+                reply: (data) => {
+                    let username = data.username || ''
+                    let url = "<?=$this->url('/msg/send')?>" + '?username=' + username
+                    action.drawer(url, `发送私信`)
+                }
+            }
+        })
+        mTable.bindEvent('send-table', {
+            toolbar: {
+                // 发送
+                send: () => {
+                    let url = "<?=$this->url('/msg/send')?>"
+                    action.drawer(url, `发送私信`)
+                }
+            }
+        })
+
+        // 阅读站内信
+        window.read = (id, e) => {
+            let url = "<?=$this->url('/msg/read')?>?idx=" + id
+            action.dialog(url, `查阅【${e.innerText}】`)
+        }
+        // 预览
+        window.preview = (id, e) => {
+            let url = "<?=$this->url('/msg/preview')?>?idx=" + id
+            action.dialog(url, `预览【${e.innerText}】`)
+        }
+    })
+</script>
+<?php $this->blockEnd(); ?>

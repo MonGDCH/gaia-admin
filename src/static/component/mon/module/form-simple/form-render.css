@@ -1,0 +1,31 @@
+/* 表单设计 */
+.vertical-form .layui-form-label {
+    float: none !important;
+    width: 100% !important;
+    text-align: left !important;
+    padding-left: 0 !important;
+}
+
+.vertical-form .layui-input-block {
+    margin-left: 0 !important;
+}
+
+.mon-link-box {
+    padding-left: 14px;
+}
+
+.mon-img-box img,
+.mon-video-box video,
+.mon-audio-box audio {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+@media screen and (max-width: 450px) {
+    .layui-rate .layui-inline {
+        display: inline-block;
+    }
+}

@@ -1,0 +1,45 @@
+<?php $this->layout('page'); ?>
+
+<div class="layui-card page-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">组别名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" lay-verify="required" lay-verType="tips" lay-reqText="请输入组别名称"
+                        placeholder="请输入组别名称" value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">父级组别</label>
+                <div class="layui-input-inline">
+                    <?=$this->build_select('pid', $groups);?>
+                </div>
+            </div>
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mForm'], function () {
+        const mForm = layui.mForm
+        // 渲染表单
+        mForm.render()
+        // 新增
+        mForm.submit('submit', function (res) {
+            // 父级存在刷新组别树方法，则刷新组别树
+            if (parent.renderLayTreeFun) {
+                parent.renderLayTreeFun(true)
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

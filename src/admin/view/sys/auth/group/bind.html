@@ -1,0 +1,74 @@
+<?php $this->layout('page'); ?>
+
+<?php $this->block('css'); ?>
+<style>
+    .pear-container {
+        margin: 0;
+        background-color: #fff;
+        width: 100%;
+    }
+</style>
+<?php $this->blockEnd(); ?>
+
+<div class="layui-row" style="padding: 14px 24px;">
+    <!-- 穿梭框 -->
+    <div id="transfer" class="center-block"></div>
+    <!-- 表单 -->
+    <form class="layui-form" action="" method="post">
+        <div class="layui-form-item layer-footer hidden">
+            <div class="layui-input-block text-right">
+                <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit lay-filter="submit">确认提交</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="transfer-reset">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    const users = JSON.parse('<?=json_encode($users)?>')
+    const selects = JSON.parse('<?=json_encode($selects)?>')
+    layui.use(['mForm', 'transfer'], function () {
+        const mForm = layui.mForm
+        const transfer = layui.transfer
+        // 渲染表单
+        mForm.render()
+        // 穿梭框
+        transfer.render({
+            elem: '#transfer',
+            id: 'transfer',
+            title: ['用户列表', '已关联'],
+            showSearch: true,
+            searchPlaceholder: '用户名搜索',
+            data: users,
+            value: selects,
+            text: {
+                none: '无数据',
+                searchNone: '无匹配数据'
+            }
+        })
+        // 重置
+        document.querySelector('#transfer-reset').addEventListener('click', function () {
+            transfer.reload('transfer', {
+                value: selects
+            });
+        })
+
+        mForm.submit('submit', function (res) {
+            // 关闭弹层
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index)
+        }, null, function () {
+            // 获取右侧数据
+            let data = transfer.getData('transfer');
+            let uids = []
+            for (let i = 0, l = data.length; i < l; i++) {
+                let item = data[i]
+                uids.push(item['value'])
+            }
+            uids = uids.join(',')
+            return { idx: "<?=$data['idx']?>", uids: uids }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

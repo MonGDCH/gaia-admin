@@ -1,0 +1,270 @@
+<?php $this->layout('page'); ?>
+
+
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="required" lay-verType="tips" lay-reqText="请输入名称"
+                        placeholder="请输入名称，必填" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务类型</label>
+                <div class="layui-input-block">
+                    <?=$this->build_select('type', $type, [], ['lay-verify' => 'required', 'lay-verType' => 'tips', 'lay-reqText' => '请选择任务类型'], true, true)?>
+                </div>
+            </div>
+
+            <div class="layui-form-item hidden" id="query-method">
+                <label class="layui-form-label">请求类型</label>
+                <div class="layui-input-block">
+                    <?=$this->build_select('queryType', ['GET' => 'GET', 'POST' => 'POST', 'PUT' => 'PUT', 'DELETE' => 'DELETE'], [], [], true)?>
+                </div>
+            </div>
+
+            <div class="layui-form-item hidden" id="query-header">
+                <label class="layui-form-label">请求头</label>
+                <div class="layui-input-block">
+                    <div class="oper-btns">
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary"
+                            lay-on="add-hander">新增</button>
+                    </div>
+
+                    <table id="header-table"></table>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Cron规则</label>
+                <div class="layui-input-block">
+                    <input type="text" name="rule" lay-verify="required" lay-verType="tips" lay-reqText="请输入名称"
+                        placeholder="请输入名称，必填" class="layui-input" id="rule">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">调用目标</label>
+                <div class="layui-input-block">
+                    <input type="text" name="target" lay-verify="required" lay-verType="tips" lay-reqText="请输入调用任务字符串"
+                        placeholder="请输入调用任务字符串，必填" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item hidden" id="params-data">
+                <label class="layui-form-label">调用参数</label>
+                <div class="layui-input-block">
+                    <div class="oper-btns">
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" lay-on="add">新增</button>
+                    </div>
+
+                    <table id="params-table"></table>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">单次执行</label>
+                <div class="layui-input-inline">
+                    <?= $this->build_radios('singleton', $singleton, key($singleton), [], true); ?>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序权重</label>
+                <div class="layui-input-inline">
+                    <input type="number" lay-affix="number" name="sort" value="10" step="1" min="0" max="100"
+                        lay-verify="required|int" lay-verType="tips" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务状态</label>
+                <div class="layui-input-inline">
+                    <?= $this->build_radios('status', $status, key($status), [], true); ?>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务备注</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">记录日志</label>
+                <div class="layui-input-inline">
+                    <?= $this->build_radios('savelog', $log, key($log), [], true); ?>
+                </div>
+            </div>
+
+            <div style="height: 64px;"></div>
+
+            <div class="layui-form-item layer-footer hidden">
+                <div class="layui-input-block text-left">
+                    <button class="layui-btn layui-btn-sm layui-btn-success" lay-submit
+                        lay-filter="submit">确认提交</button>
+                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['cron', 'mForm', 'table', 'util'], function () {
+        const cron = layui.cron
+        const mForm = layui.mForm
+        const table = layui.table
+        const util = layui.util
+        const urlType = '<?=$urlType?>'
+        const shellType = '<?=$shellType?>'
+
+        const headerKey = 'header-table'
+        table.render({
+            elem: '#header-table',
+            id: headerKey,
+            maxHeight: 180,
+            size: 'sm',
+            page: false,
+            editTrigger: 'click',
+            cols: [[
+                { field: 'title', title: '参数名', width: 160, align: 'center', edit: 'text' },
+                { field: 'value', title: '参数值', minWidth: 200, align: 'center', edit: 'text' },
+                {
+                    title: '操作', width: 80, align: 'center', templet: (d) => {
+                        return `<div class="oper-btns">
+                                    <button type="button" class="layui-btn layui-btn-xs layui-bg-red" lay-event="remove">删除</button>
+                                </div>`
+                    }
+                }
+            ]],
+            data: []
+        });
+        table.on(`tool(${headerKey})`, function (obj) {
+            let data = table.getData(headerKey)
+            switch (obj.event) {
+                case 'remove':
+                    data.splice(obj.index, 1)
+                    table.reloadData(headerKey, { data: data });
+                    break;
+            }
+        })
+        const key = 'params-table'
+        table.render({
+            elem: '#params-table',
+            id: key,
+            maxHeight: 180,
+            size: 'sm',
+            page: false,
+            editTrigger: 'click',
+            cols: [[
+                { field: 'title', title: '参数名', width: 160, align: 'center', edit: 'text' },
+                { field: 'value', title: '参数值', minWidth: 200, align: 'center', edit: 'text' },
+                {
+                    title: '操作', width: 80, align: 'center', templet: (d) => {
+                        return `<div class="oper-btns">
+                                    <button type="button" class="layui-btn layui-btn-xs layui-bg-red" lay-event="remove">删除</button>
+                                </div>`
+                    }
+                }
+            ]],
+            data: []
+        });
+        table.on(`tool(${key})`, function (obj) {
+            let data = table.getData(key)
+            switch (obj.event) {
+                case 'remove':
+                    data.splice(obj.index, 1)
+                    table.reloadData(key, { data: data });
+                    break;
+            }
+        })
+        util.on({
+            'add-hander': function () {
+                let data = table.getData(headerKey)
+                data.push({ title: '', value: '' })
+                table.reloadData(headerKey, { data: data });
+            },
+            'add': function () {
+                let data = table.getData(key)
+                data.push({ title: '', value: '' })
+                table.reloadData(key, { data: data });
+            }
+        })
+
+        // crontab表达式
+        cron.render({ elem: "#rule" });
+        // 渲染表单
+        mForm.render()
+        // 选择任务类型
+        mForm.on('select(type)', (data) => {
+            if (data.value == urlType) {
+                document.querySelector('#query-method').classList.remove('hidden')
+                document.querySelector('#query-header').classList.remove('hidden')
+            } else {
+                document.querySelector('#query-method').classList.add('hidden')
+                document.querySelector('#query-header').classList.add('hidden')
+            }
+            if (data.value != shellType && data.value != '') {
+                document.querySelector('#params-data').classList.remove('hidden')
+            } else {
+                document.querySelector('#params-data').classList.add('hidden')
+            }
+        });
+        mForm.submit('submit', null, null, (form) => {
+            let formatData = {}
+            // URL请求，独立额外的参数
+            if (form.field.type == urlType) {
+                formatData['method'] = form.field.queryType
+                let formatHeader = {}
+                let headerData = table.getData(headerKey)
+                headerData.forEach(item => {
+                    formatHeader[item.title] = item.value
+                })
+                formatData['header'] = formatHeader
+
+                let queryData = {}
+                let data = table.getData(key)
+                data.forEach(item => {
+                    queryData[item.title] = item.value
+                })
+                formatData['data'] = queryData
+            } else {
+                let data = table.getData(key)
+                data.forEach(item => {
+                    formatData[item.title] = item.value
+                })
+            }
+
+            let params = JSON.stringify(formatData)
+            return { params: params }
+        }, (form) => {
+            let data = table.getData(key)
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i]
+                if (item.title == '') {
+                    layer.msg(`[行${i + 1}]参数名必须!`, { icon: 2 })
+                    return false;
+                }
+            }
+
+            if (form.field.type == urlType) {
+                let header = table.getData(headerKey)
+                for (let i = 0; i < header.length; i++) {
+                    let item = header[i]
+                    if (item.title == '') {
+                        layer.msg(`[行${i + 1}]请求头参数名必须!`, { icon: 2 })
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>

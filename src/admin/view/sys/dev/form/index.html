@@ -1,0 +1,148 @@
+<?php $this->layout('page'); ?>
+
+<!-- 搜索 -->
+<div class="search-panel" id="search-form">
+    <form class="layui-form" lay-filter="search">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" placeholder="搜索名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-block">
+                <select name="status" placeholder="状态">
+                    <option value=""></option>
+                    <option value="1">正常</option>
+                    <option value="0">禁用</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">创建时间：</label>
+            <div class="layui-input-block">
+                <input type="text" name="create_time" placeholder="搜索创建时间" class="layui-input date-range">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body m-card-body">
+        <!-- 表格 -->
+        <table id="table" lay-filter="table"></table>
+    </div>
+</div>
+
+<!-- 表格操作栏 -->
+<script type="text/html" id="toolbar">
+    <?php if($this->checkAuth('/sys/dev/form/add', $uid)): ?>
+    <button class="layui-btn layui-btn-sm layui-btn-success" lay-event="design" title="新增"><i class="layui-icon layui-icon-add-1"></i>新增</button>
+    <?php endif; ?>
+    <?= $this->build_toolbar('/sys/dev/form', $uid, ['search', 'reset']); ?>
+</script>
+
+<!-- 操作 -->
+<script type="text/html" id="operate">
+    <div class="oper-btns">
+        <?php if($this->checkAuth('/sys/dev/form/edit', $uid)): ?>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="designEdit">编辑模型</button>
+        <?php endif; ?>
+        <?php if($this->checkAuth('/sys/dev/form/toggle', $uid)): ?>
+        <!-- {{# if(d.status == '1'){ }} -->
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-idx="{{ d.id }}" data-url="<?=$this->url('/sys/dev/form/toggle')?>" data-title="确认禁用该模型么？" data-status="0" lay-event="confirm">禁用模型</button>
+        <!-- {{# }else{ }} -->
+        <button type="button" class="layui-btn layui-btn-warm layui-btn-xs" data-idx="{{ d.id }}" data-url="<?=$this->url('/sys/dev/form/toggle')?>" data-title="确认恢复该模型么？" data-status="1" lay-event="confirm">恢复模型</button>
+        <!-- {{# } }} -->
+        <?php endif; ?>
+    </div>
+</script>
+
+<?php $this->block('js'); ?>
+<script>
+    layui.use(['mTable', 'mForm', 'common'], function () {
+        const previewAuth = "<?= $this->checkAuth('/sys/dev/form/edit', $uid) ? '1' : '0' ?>"
+        const mTable = layui.mTable
+        const mForm = layui.mForm
+        const common = layui.common
+        // 缓存名
+        const FORMDESIGN_CACHE = 'form-design-mon'
+        const FORMCONFIG_CACHE = 'form-config-mon'
+
+        // 渲染搜索表单
+        mForm.render()
+        // 渲染表格
+        mTable.render({
+            elem: '#table',
+            url: "<?=$this->url('/sys/dev/form')?>?isApi=1",
+            cols: [[
+                { field: 'id', title: 'ID', width: 80, align: 'center' },
+                { field: 'title', title: '名称', width: 240, templet: (d) => `<a href="javascript:void(0);" class="mon-link" lay-event="preview">${d.title}</a>` },
+                { field: 'uid', title: '所属用户', width: 180 },
+                { field: 'remark', title: '备注', minWidth: 240 },
+                { field: 'status', title: '状态', width: 100, align: 'center', templet: function (d) { return mTable.format.status(d.status) } },
+                { field: 'create_time', title: '创建时间', width: 168, align: 'center', templet: function (d) { return mTable.format.dateTime(d.create_time) }, sort: true },
+                { field: 'operate', title: '操作', templet: '#operate', minWidth: 160 }
+            ]]
+        })
+        // 绑定表格事件
+        mTable.bindEvent('table', {
+            // toolbar事件
+            toolbar: {
+                // 新增
+                design: function () {
+                    window.location.href = "<?=$this->url('/sys/dev/form/add')?>"
+                },
+                // 搜索
+                search: function (data) {
+                    if (data.create_time) {
+                        let icreate_time = data.create_time.split(' - ')
+                        data.start_time = common.strtotime(icreate_time[0] + ' 00:00:00')
+                        data.end_time = common.strtotime(icreate_time[1] + ' 23:59:59')
+                    }
+
+                    return data
+                },
+            },
+            // tool事件
+            tool: {
+                // 编辑
+                designEdit: function (data) {
+                    window.location.href = "<?=$this->url('/sys/dev/form/edit')?>" + '?idx=' + data.id
+                },
+                preview: function (data) {
+                    if (previewAuth) {
+                        localStorage.setItem(FORMDESIGN_CACHE, data.config)
+                        localStorage.setItem(FORMCONFIG_CACHE, JSON.stringify({
+                            title: data.title,
+                            align: data.align,
+                            remark: data.remark
+                        }))
+
+                        setTimeout(() => {
+                            layer.open({
+                                type: 2,
+                                title: '预览',
+                                shadeClose: true,
+                                area: ['860px', '640px'],
+                                content: "<?=$this->url('/sys/dev/form/preview')?>",
+                            });
+                        }, 100)
+                    }
+                }
+
+            },
+            sort: (data) => {
+                if (data.create_time) {
+                    let icreate_time = data.create_time.split(' - ')
+                    data.start_time = common.strtotime(icreate_time[0] + ' 00:00:00')
+                    data.end_time = common.strtotime(icreate_time[1] + ' 23:59:59')
+                }
+
+                return data
+            }
+        })
+    })
+</script>
+<?php $this->blockEnd(); ?>
