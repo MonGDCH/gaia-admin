@@ -6,6 +6,7 @@ namespace plugins\admin\dao;
 
 use Throwable;
 use mon\log\Logger;
+use mon\util\Common;
 use mon\thinkOrm\Dao;
 use mon\util\Instance;
 use plugins\admin\validate\AdminValidate;
@@ -64,7 +65,7 @@ class AdminDao extends Dao
         }
 
         // 生成密码
-        $salt = randString(6, 0);
+        $salt = Common::instance()->randString(6, 0);
         $password = $this->encodePassword($data['password'], $salt);
 
         $this->startTrans();
@@ -210,7 +211,7 @@ class AdminDao extends Dao
         }
 
         // 重新生成密码
-        $salt = randString(6, 0);
+        $salt = Common::instance()->randString(6, 0);
         $password = $this->encodePassword($data['password'], $salt);
         $this->startTrans();
         try {

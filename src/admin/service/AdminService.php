@@ -8,6 +8,7 @@ use Throwable;
 use mon\env\Config;
 use mon\log\Logger;
 use think\facade\Db;
+use mon\util\Common;
 use mon\util\Instance;
 use plugins\admin\dao\AdminDao;
 use plugins\admin\contract\AdminEnum;
@@ -79,7 +80,8 @@ class AdminService
         }
 
         // 定义登陆token
-        $login_token = md5(randString() . $ip . microtime() . $userInfo['username']);
+        $rand_key = Common::instance()->randString();
+        $login_token = md5($rand_key . $ip . microtime() . $userInfo['username']);
         Db::startTrans();
         try {
             Logger::instance()->channel()->info('User login');

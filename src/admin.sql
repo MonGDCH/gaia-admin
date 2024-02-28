@@ -38,7 +38,7 @@ CREATE TABLE `admin`  (
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of admin
@@ -64,7 +64,7 @@ CREATE TABLE `admin_log`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`uid`) USING BTREE,
   INDEX `module`(`module`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1588 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员操作日志表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员操作日志表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of admin_log
@@ -85,12 +85,8 @@ CREATE TABLE `admin_login_log`  (
   `ua` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '浏览器请求头user-agent',
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 360 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员登录表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员登录表' ROW_FORMAT = COMPACT;
 
--- ----------------------------
--- Records of admin_login_log
--- ----------------------------
-INSERT INTO `admin_login_log` VALUES (361, 1, 0, 1, '管理员登录', '', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0', 1707101185);
 
 -- ----------------------------
 -- Table structure for admin_message
@@ -108,7 +104,7 @@ CREATE TABLE `admin_message`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `message`(`uid`, `message_id`) USING BTREE,
   INDEX `user`(`uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 49 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户收取系统站内信表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户收取系统站内信表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of admin_message
@@ -132,7 +128,6 @@ CREATE TABLE `auth_access`  (
 -- Records of auth_access
 -- ----------------------------
 INSERT INTO `auth_access` VALUES (1, 1, 1685504920, 1685504920);
-INSERT INTO `auth_access` VALUES (35, 11, 1707100163, 1707100163);
 
 -- ----------------------------
 -- Table structure for auth_group
@@ -147,13 +142,12 @@ CREATE TABLE `auth_group`  (
   `update_time` int(10) UNSIGNED NOT NULL,
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 35 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '规则组表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '规则组表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of auth_group
 -- ----------------------------
 INSERT INTO `auth_group` VALUES (1, 0, '超级管理员', '*', 1, 1490883540, 1490883540);
-INSERT INTO `auth_group` VALUES (35, 0, '222', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,160,161,162,163,164,165,166,167,168,212,215,216,217,218,219,220,221', 1, 1707100159, 1707100145);
 
 -- ----------------------------
 -- Table structure for auth_rule
@@ -273,7 +267,7 @@ CREATE TABLE `counter`  (
   `create_time` int(10) UNSIGNED NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `item`(`app`, `module`, `uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '计数器表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '计数器表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of counter
@@ -300,7 +294,7 @@ CREATE TABLE `crontab`  (
   `update_time` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '更新时间',
   `create_time` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '定时器任务表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '定时器任务表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of crontab
@@ -321,7 +315,7 @@ CREATE TABLE `crontab_log`  (
   `create_time` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `crontab_id`(`crontab_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2788 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '定时器任务执行日志表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '定时器任务执行日志表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of crontab_log
@@ -347,21 +341,21 @@ CREATE TABLE `dictionary`  (
 -- ----------------------------
 -- Records of dictionary
 -- ----------------------------
-INSERT INTO `dictionary` VALUES (14, 'dictionary', 'sms', '短信', '', 1, 1686727839, 1685518916);
-INSERT INTO `dictionary` VALUES (15, 'dictionary', 'web', '站点信息', '系统站点相关信息', 1, 1693461093, 1693461093);
-INSERT INTO `dictionary` VALUES (16, 'dictionary', 'email', '邮箱', '', 1, 1700643560, 1685522200);
-INSERT INTO `dictionary` VALUES (22, 'email', 'host', 'smtp.qq.com', 'SMTP服务器', 1, 1685526132, 1685526132);
-INSERT INTO `dictionary` VALUES (23, 'email', 'port', '465', 'SMTP服务器的远程服务器端口号', 1, 1685526157, 1685526157);
-INSERT INTO `dictionary` VALUES (24, 'email', 'ssl', '1', '是否开启ssl，1开启，0不开启', 1, 1685526191, 1685526191);
-INSERT INTO `dictionary` VALUES (25, 'email', 'name', 'monlam', 'SMTP发件人名称', 1, 1685526213, 1685526213);
-INSERT INTO `dictionary` VALUES (26, 'email', 'user', '', 'SMTP登录账号', 1, 1685526463, 1685526463);
-INSERT INTO `dictionary` VALUES (27, 'email', 'password', '', 'SMTP登录密码', 1, 1685526487, 1685526487);
-INSERT INTO `dictionary` VALUES (28, 'email', 'from', '', '发件人邮箱地址', 1, 1685526633, 1685526633);
-INSERT INTO `dictionary` VALUES (30, 'web', 'title', 'Gaia Admin', '系统名称', 1, 1702870210, 1693461126);
-INSERT INTO `dictionary` VALUES (31, 'web', 'logo', '/static/img/logo.png', '系统站点Logo', 1, 1700638577, 1693461181);
-INSERT INTO `dictionary` VALUES (32, 'web', 'desc', '简 洁 而 不 简 单', '系统小标题', 1, 1693461480, 1693461480);
-INSERT INTO `dictionary` VALUES (33, 'web', 'copr', '版权信息', '系统版权信息', 1, 1693461389, 1693461389);
-INSERT INTO `dictionary` VALUES (34, 'web', 'gov', '备案号', '系统备案号', 1, 1693461241, 1693461241);
+INSERT INTO `dictionary` VALUES (1, 'dictionary', 'sms', '短信', '', 1, 1686727839, 1685518916);
+INSERT INTO `dictionary` VALUES (2, 'dictionary', 'web', '站点信息', '系统站点相关信息', 1, 1693461093, 1693461093);
+INSERT INTO `dictionary` VALUES (3, 'dictionary', 'email', '邮箱', '', 1, 1700643560, 1685522200);
+INSERT INTO `dictionary` VALUES (4, 'email', 'host', 'smtp.qq.com', 'SMTP服务器', 1, 1685526132, 1685526132);
+INSERT INTO `dictionary` VALUES (5, 'email', 'port', '465', 'SMTP服务器的远程服务器端口号', 1, 1685526157, 1685526157);
+INSERT INTO `dictionary` VALUES (6, 'email', 'ssl', '1', '是否开启ssl，1开启，0不开启', 1, 1685526191, 1685526191);
+INSERT INTO `dictionary` VALUES (7, 'email', 'name', 'monlam', 'SMTP发件人名称', 1, 1685526213, 1685526213);
+INSERT INTO `dictionary` VALUES (8, 'email', 'user', '', 'SMTP登录账号', 1, 1685526463, 1685526463);
+INSERT INTO `dictionary` VALUES (9, 'email', 'password', '', 'SMTP登录密码', 1, 1685526487, 1685526487);
+INSERT INTO `dictionary` VALUES (10, 'email', 'from', '', '发件人邮箱地址', 1, 1685526633, 1685526633);
+INSERT INTO `dictionary` VALUES (11, 'web', 'title', 'Gaia Admin', '系统名称', 1, 1702870210, 1693461126);
+INSERT INTO `dictionary` VALUES (12, 'web', 'logo', '/static/img/logo.png', '系统站点Logo', 1, 1700638577, 1693461181);
+INSERT INTO `dictionary` VALUES (13, 'web', 'desc', '简 洁 而 不 简 单', '系统小标题', 1, 1693461480, 1693461480);
+INSERT INTO `dictionary` VALUES (14, 'web', 'copr', '版权信息', '系统版权信息', 1, 1693461389, 1693461389);
+INSERT INTO `dictionary` VALUES (15, 'web', 'gov', '备案号', '系统备案号', 1, 1693461241, 1693461241);
 
 -- ----------------------------
 -- Table structure for express
@@ -373,12 +367,12 @@ CREATE TABLE `express`  (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
   `remark` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '备注',
   `sort` tinyint(1) UNSIGNED NOT NULL DEFAULT 50 COMMENT '排序权重',
-  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0:待确认, 1:待发货, 1:已发货, 2:已收货, 3:已关闭',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0无效1有效',
   `update_time` int(10) UNSIGNED NOT NULL,
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `key`(`code`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '物流公司表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '物流公司表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of express
@@ -386,7 +380,7 @@ CREATE TABLE `express`  (
 INSERT INTO `express` VALUES (1, 'zhongtong', '中通快递', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (2, 'yunda', '韵达快递', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (3, 'yuantong', '圆通速递', '', 50, 1, 1700818200, 1700818200);
-INSERT INTO `express` VALUES (4, 'baishiwuliu', '百世物流', '', 50, 1, 1700818200, 1700818200);
+INSERT INTO `express` VALUES (4, 'ems', 'EMS', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (5, 'shentong', '申通快递', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (6, 'shunfeng', '顺丰速运', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (7, 'jtexpress', '极兔速递', '', 50, 1, 1700818200, 1700818200);
@@ -396,7 +390,6 @@ INSERT INTO `express` VALUES (10, 'youzhengbk', '邮政标准快递', '', 50, 1,
 INSERT INTO `express` VALUES (11, 'guangdongyouzhengwuliu', '广东邮政物流', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (12, 'debangwuliu', '德邦物流', '', 50, 1, 1700818200, 1700818200);
 INSERT INTO `express` VALUES (13, 'debangkuaidi', '德邦快递', '', 50, 1, 1700818200, 1700818200);
-INSERT INTO `express` VALUES (14, 'ems', 'EMS', '', 50, 1, 1700818200, 1700818200);
 
 -- ----------------------------
 -- Table structure for fast_menu
@@ -409,7 +402,7 @@ CREATE TABLE `fast_menu`  (
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `item`(`uid`, `menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '快捷菜单表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '快捷菜单表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of fast_menu
@@ -433,7 +426,7 @@ CREATE TABLE `files`  (
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `item`(`md5`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 57 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '上传文件表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '上传文件表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of files
@@ -480,7 +473,7 @@ CREATE TABLE `menu`  (
   `update_time` int(10) UNSIGNED NOT NULL,
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 61 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of menu
@@ -526,7 +519,7 @@ CREATE TABLE `message`  (
   `update_time` int(10) UNSIGNED NOT NULL,
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 35 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统站内信表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统站内信表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of message
@@ -579,7 +572,7 @@ CREATE TABLE `message_type`  (
   `create_time` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `title`(`title`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统站内信类型表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统站内信类型表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of message_type
@@ -4049,6 +4042,5 @@ INSERT INTO `region` VALUES (6543, 410, 2, '阿拉尔市', '659002', 10, 1, 1700
 INSERT INTO `region` VALUES (6544, 410, 2, '图木舒克市', '659003', 10, 1, 1700286983, 1700286983);
 INSERT INTO `region` VALUES (6545, 410, 2, '五家渠市', '659004', 10, 1, 1700286983, 1700286983);
 INSERT INTO `region` VALUES (6546, 410, 2, '铁门关市', '659006', 10, 1, 1700286983, 1700286983);
-INSERT INTO `region` VALUES (6548, 0, 0, 'aaa222', 'sss', 0, 1, 1703315323, 1703315219);
 
 SET FOREIGN_KEY_CHECKS = 1;
