@@ -33,8 +33,7 @@ class Install
      */
     protected static $dir_relation = [
         'admin' => 'plugins/admin',
-        'static' => 'public/static',
-        'process/crontab' => 'process/crontab',
+        'static' => 'public/static'
     ];
 
     /**

@@ -54,11 +54,11 @@ return [
             // 服务器地址
             'host'          => env('DB_HOST', '127.0.0.1'),
             // 数据库名
-            'database'      => env('DB_NAME', 'gaia-plugins'),
+            'database'      => env('DB_NAME', ''),
             // 用户名
-            'username'      => env('DB_USER', 'root'),
+            'username'      => env('DB_USER', ''),
             // 密码
-            'password'      => env('DB_PASSWORD', '123456'),
+            'password'      => env('DB_PASSWORD', ''),
             // 端口
             'port'          => env('DB_PORT', 3306)
         ]

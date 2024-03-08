@@ -6,7 +6,6 @@ namespace plugins\admin;
 
 use mon\env\Config;
 use gaia\interfaces\PluginInterface;
-use mon\http\interfaces\AppInterface;
 
 /**
  * 插件启动
@@ -31,14 +30,11 @@ class Bootstrap implements PluginInterface
      *
      * @return void
      */
-    public static function register(array $options = [])
+    public static function register()
     {
         // 加载配置
         Config::instance()->loadDir(__DIR__ . '/config', true, [], 'admin');
-        /** @var AppInterface $app  */
-        $app = $options['app'];
         // 注册路由
-        $route = $app->route();
         require_once __DIR__ . '/router/router.php';
     }
     /**

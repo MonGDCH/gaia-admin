@@ -30,8 +30,8 @@ use plugins\admin\controller\sys\notice\MessageTypeController;
 use plugins\admin\controller\sys\dictionary\OptionsController;
 use plugins\admin\Controller\sys\dictionary\ExpressController;
 
-/** @var Route $route */
-$route->group(Config::instance()->get('admin.app.root_path', ''), function (Route $route) {
+
+Route::instance()->group(Config::instance()->get('admin.app.root_path', ''), function (Route $route) {
     // 登录
     $route->map(['GET', 'POST'], '/login', [HomeController::class, 'login']);
     // 验证码

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1709331b271f2cbc6acc360157c264b2",
+    "content-hash": "70e3d9327890bcb02e77e92a9e24f7d5",
     "packages": [
         {
             "name": "mongdch/mon-auth-think",
@@ -163,16 +163,16 @@
         },
         {
             "name": "mongdch/mon-http",
-            "version": "1.1.9",
+            "version": "1.1.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MonGDCH/mon-http.git",
-                "reference": "b4c9ebf5a5828c3fb81beff56b6cd939bb782b0b"
+                "reference": "ef8bca9534c5e9d4ef0355e69a9aceaa8a21eba3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MonGDCH/mon-http/zipball/b4c9ebf5a5828c3fb81beff56b6cd939bb782b0b",
-                "reference": "b4c9ebf5a5828c3fb81beff56b6cd939bb782b0b",
+                "url": "https://api.github.com/repos/MonGDCH/mon-http/zipball/ef8bca9534c5e9d4ef0355e69a9aceaa8a21eba3",
+                "reference": "ef8bca9534c5e9d4ef0355e69a9aceaa8a21eba3",
                 "shasum": ""
             },
             "require": {
@@ -211,22 +211,22 @@
             ],
             "support": {
                 "issues": "https://github.com/MonGDCH/mon-http/issues",
-                "source": "https://github.com/MonGDCH/mon-http/tree/1.1.9"
+                "source": "https://github.com/MonGDCH/mon-http/tree/1.1.12"
             },
-            "time": "2024-02-16T07:20:33+00:00"
+            "time": "2024-03-07T08:55:31+00:00"
         },
         {
             "name": "mongdch/mon-think-orm",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MonGDCH/mon-think-orm.git",
-                "reference": "64af0648276a07b7bf2aba085a7b4db91f996a48"
+                "reference": "2dd16deebb77fa8f94e03f9ccc4cb7b5c19de6f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MonGDCH/mon-think-orm/zipball/64af0648276a07b7bf2aba085a7b4db91f996a48",
-                "reference": "64af0648276a07b7bf2aba085a7b4db91f996a48",
+                "url": "https://api.github.com/repos/MonGDCH/mon-think-orm/zipball/2dd16deebb77fa8f94e03f9ccc4cb7b5c19de6f5",
+                "reference": "2dd16deebb77fa8f94e03f9ccc4cb7b5c19de6f5",
                 "shasum": ""
             },
             "require": {
@@ -259,22 +259,22 @@
             ],
             "support": {
                 "issues": "https://github.com/MonGDCH/mon-think-orm/issues",
-                "source": "https://github.com/MonGDCH/mon-think-orm/tree/1.0.1"
+                "source": "https://github.com/MonGDCH/mon-think-orm/tree/1.0.2"
             },
-            "time": "2024-02-15T08:54:08+00:00"
+            "time": "2024-03-07T03:17:19+00:00"
         },
         {
             "name": "mongdch/mon-util",
-            "version": "1.5.3",
+            "version": "1.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MonGDCH/mon-util.git",
-                "reference": "d470c4ed91954e3fe06f9afe5d20f91a8df52c92"
+                "reference": "a4b9b797d8d86bc2833385475ae8a946611a8bd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MonGDCH/mon-util/zipball/d470c4ed91954e3fe06f9afe5d20f91a8df52c92",
-                "reference": "d470c4ed91954e3fe06f9afe5d20f91a8df52c92",
+                "url": "https://api.github.com/repos/MonGDCH/mon-util/zipball/a4b9b797d8d86bc2833385475ae8a946611a8bd2",
+                "reference": "a4b9b797d8d86bc2833385475ae8a946611a8bd2",
                 "shasum": ""
             },
             "require": {
@@ -311,9 +311,9 @@
             ],
             "support": {
                 "issues": "https://github.com/MonGDCH/mon-util/issues",
-                "source": "https://github.com/MonGDCH/mon-util/tree/1.5.3"
+                "source": "https://github.com/MonGDCH/mon-util/tree/1.5.4"
             },
-            "time": "2024-02-26T09:00:46+00:00"
+            "time": "2024-03-04T06:50:08+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -619,56 +619,6 @@
                 "source": "https://github.com/top-think/think-orm/tree/v2.0.61"
             },
             "time": "2023-04-20T14:27:51+00:00"
-        },
-        {
-            "name": "workerman/crontab",
-            "version": "v1.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/crontab.git",
-                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/crontab/zipball/b78f1556f2977715b9cb5653129e6d9cf160d966",
-                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0",
-                "workerman/workerman": ">=4.0.20"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Workerman\\Crontab\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "walkor",
-                    "email": "walkor@workerman.net",
-                    "homepage": "http://www.workerman.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A crontab written in PHP based on workerman",
-            "homepage": "http://www.workerman.net",
-            "keywords": [
-                "crontab"
-            ],
-            "support": {
-                "email": "walkor@workerman.net",
-                "forum": "http://wenda.workerman.net/",
-                "issues": "https://github.com/walkor/workerman/issues",
-                "source": "https://github.com/walkor/crontab",
-                "wiki": "http://doc.workerman.net/"
-            },
-            "time": "2022-10-17T01:59:19+00:00"
         },
         {
             "name": "workerman/workerman",
