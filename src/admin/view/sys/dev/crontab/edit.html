@@ -54,7 +54,7 @@
                 </div>
             </div>
 
-            <div class="layui-form-item <?= $data['type'] != $shellType ? '' : 'hidden' ?>" id="params-data">
+            <div class="layui-form-item" id="params-data">
                 <label class="layui-form-label">调用参数</label>
                 <div class="layui-input-block">
                     <div class="oper-btns">
@@ -122,7 +122,6 @@
         const table = layui.table
         const util = layui.util
         const urlType = '<?=$urlType?>'
-        const shellType = '<?=$shellType?>'
 
         const headerKey = 'header-table'
         table.render({
@@ -209,11 +208,6 @@
             } else {
                 document.querySelector('#query-method').classList.add('hidden')
                 document.querySelector('#query-header').classList.add('hidden')
-            }
-            if (data.value != shellType && data.value != '') {
-                document.querySelector('#params-data').classList.remove('hidden')
-            } else {
-                document.querySelector('#params-data').classList.add('hidden')
             }
         });
         mForm.submit('submit', null, null, (form) => {

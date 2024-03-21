@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace plugins\admin\validate;
 
 use mon\util\Validate;
-use plugins\admin\contract\CrontabEnum;
+use gaia\crontab\CrontabEnum;
 
 /**
  * 定时任务验证器

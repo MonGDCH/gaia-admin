@@ -96,7 +96,7 @@ class MenuDao extends Dao
         } catch (Throwable $e) {
             $this->rollback();
             $this->error = '新增菜单异常';
-            Logger::instance()->channel()->error('Add admin menu exception, msg => ' . $e->getMessage(), ['trace' => true]);
+            Logger::instance()->channel()->error('Add admin menu exception, msg => ' . $e->getMessage());
             return 0;
         }
     }

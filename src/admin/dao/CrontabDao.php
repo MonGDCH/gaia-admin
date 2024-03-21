@@ -89,7 +89,7 @@ class CrontabDao extends Dao
         } catch (Throwable $e) {
             $this->rollback();
             $this->error = '新增定时任务异常';
-            Logger::instance()->channel()->error('Add crontab task exception, msg => ' . $e->getMessage(), ['trace' => true]);
+            Logger::instance()->channel()->error('Add crontab task exception, msg => ' . $e->getMessage());
             return 0;
         }
     }
@@ -147,7 +147,7 @@ class CrontabDao extends Dao
         } catch (Throwable $e) {
             $this->rollback();
             $this->error = '编辑定时任务异常';
-            Logger::instance()->channel()->error('Edit crontab task exception, msg => ' . $e->getMessage(), ['trace' => true]);
+            Logger::instance()->channel()->error('Edit crontab task exception, msg => ' . $e->getMessage());
             return false;
         }
     }

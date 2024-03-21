@@ -43,6 +43,7 @@ class Install
      */
     public static function install()
     {
+        echo 'Gaia-Admin installation successful, please execute `php gaia vendor:publish gaia\admin`' . PHP_EOL;
     }
 
     /**
@@ -52,6 +53,7 @@ class Install
      */
     public static function update()
     {
+        echo 'Gaia-Admin upgrade successful, please execute `php gaia vendor:publish gaia\admin`' . PHP_EOL;
     }
 
     /**
@@ -82,5 +84,8 @@ class Install
             $sourceDir = $source_path . $source;
             Plugin::copydir($sourceDir, $dest, true);
         }
+
+        // 联动发布验相关扩展库
+        // \mon\cache\Install::publish();
     }
 }

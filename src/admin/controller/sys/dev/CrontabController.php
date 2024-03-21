@@ -6,11 +6,11 @@ namespace plugins\admin\controller\sys\dev;
 
 use Throwable;
 use mon\http\Request;
+use gaia\crontab\CrontabEnum;
 use plugins\admin\dao\CrontabDao;
 use plugins\admin\comm\Controller;
+use support\crontab\CrontabService;
 use plugins\admin\dao\CrontabLogDao;
-use plugins\admin\contract\CrontabEnum;
-use plugins\admin\service\CrontabService;
 
 
 /**
@@ -74,7 +74,6 @@ class CrontabController extends Controller
         }
 
         $this->assign('urlType', CrontabEnum::TASK_TYPE['url']);
-        $this->assign('shellType', CrontabEnum::TASK_TYPE['shell']);
         $this->assign('log', CrontabEnum::TASK_LOG_TITLE);
         $this->assign('type', CrontabEnum::TASK_TYPE_TITLE);
         $this->assign('status', CrontabEnum::TASK_STATUS_TITLE);
@@ -150,7 +149,6 @@ class CrontabController extends Controller
         $this->assign('header', json_encode($header, JSON_UNESCAPED_UNICODE));
         $this->assign('queryData', json_encode($queryData, JSON_UNESCAPED_UNICODE));
         $this->assign('urlType', CrontabEnum::TASK_TYPE['url']);
-        $this->assign('shellType', CrontabEnum::TASK_TYPE['shell']);
         $this->assign('log', CrontabEnum::TASK_LOG_TITLE);
         $this->assign('type', CrontabEnum::TASK_TYPE_TITLE);
         $this->assign('status', CrontabEnum::TASK_STATUS_TITLE);

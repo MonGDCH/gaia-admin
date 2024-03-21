@@ -89,7 +89,7 @@ class FormDesignDao extends Dao
         } catch (Throwable $e) {
             $this->rollback();
             $this->error = '新增表单模型异常';
-            Logger::instance()->channel()->error('Add form design exception, msg => ' . $e->getMessage(), ['trace' => true]);
+            Logger::instance()->channel()->error('Add form design exception, msg => ' . $e->getMessage());
             return false;
         }
     }

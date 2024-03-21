@@ -97,7 +97,7 @@ class RegionDao extends Dao
         } catch (Throwable $e) {
             $this->rollback();
             $this->error = '新增省市地区异常';
-            Logger::instance()->channel()->error('Add region exception, msg => ' . $e->getMessage(), ['trace' => true]);
+            Logger::instance()->channel()->error('Add region exception, msg => ' . $e->getMessage());
             return 0;
         }
     }

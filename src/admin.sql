@@ -11,7 +11,7 @@
  Target Server Version : 80012
  File Encoding         : 65001
 
- Date: 05/02/2024 10:47:44
+ Date: 08/03/2024 17:09:24
 */
 
 SET NAMES utf8mb4;
@@ -43,7 +43,7 @@ CREATE TABLE `admin`  (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES (1, 'admin', 'fb0fd02ecb06769a0e397960f231e855', 'JSbBvf', '/upload/202312/1575929252gaia6584f914dd54d.jpg', 1707101185, '127.0.0.1', '65c38eff1119cddfd3063b1d6f50fca7', 0, 1, 1, 1, 1707101185, 1658390052);
+INSERT INTO `admin` VALUES (1, 'admin', 'fb0fd02ecb06769a0e397960f231e855', 'JSbBvf', '/static/img/avatar.png', 1709888170, '127.0.0.1', 'e49e61f244d35f38ffadf4d73803cab4', 0, 1, 1, 1, 1709888170, 1658390052);
 
 -- ----------------------------
 -- Table structure for admin_log
@@ -87,6 +87,9 @@ CREATE TABLE `admin_login_log`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员登录表' ROW_FORMAT = COMPACT;
 
+-- ----------------------------
+-- Records of admin_login_log
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for admin_message
@@ -498,11 +501,10 @@ INSERT INTO `menu` VALUES (17, 16, '系统通知', '/sys/notice/message', 'layui
 INSERT INTO `menu` VALUES (18, 16, '消息类型', '/sys/notice/type', 'layui-icon layui-icon-template-1', '通知消息类型', 5, 1, 0, 1, 1697093982, 1697093982);
 INSERT INTO `menu` VALUES (19, 2, '开发辅助', 'dev', 'layui-icon layui-icon-template-1', '', 35, 0, 0, 1, 1697093981, 1697093981);
 INSERT INTO `menu` VALUES (20, 19, '表单模型', '/sys/dev/form', 'layui-icon layui-icon-form', '', 10, 1, 0, 1, 1697093982, 1697093982);
-INSERT INTO `menu` VALUES (21, 19, '消息队列', '/sys/dev/queue', 'layui-icon layui-icon-template-1', '', 5, 1, 0, 1, 1702366497, 1702093022);
-INSERT INTO `menu` VALUES (22, 19, '定时任务', '/sys/dev/crontab', 'layui-icon layui-icon-template-1', '', 6, 1, 0, 1, 1702366484, 1702280803);
-INSERT INTO `menu` VALUES (23, 7, '配置信息', '/sys/dictionary/options', 'layui-icon layui-icon-component', '', 10, 1, 0, 1, 1700884194, 1697093981);
-INSERT INTO `menu` VALUES (24, 7, '物流公司', '/sys/dictionary/express', 'layui-icon layui-icon-template-1', '', 10, 1, 0, 1, 1700890565, 1700890565);
-INSERT INTO `menu` VALUES (25, 7, '省份城市', '/sys/dictionary/region', 'layui-icon layui-icon-template-1', '省份城市数据管理', 5, 1, 0, 1, 1700884433, 1700286539);
+INSERT INTO `menu` VALUES (21, 19, '定时任务', '/sys/dev/crontab', 'layui-icon layui-icon-template-1', '', 6, 1, 0, 1, 1702366484, 1702280803);
+INSERT INTO `menu` VALUES (22, 7, '配置信息', '/sys/dictionary/options', 'layui-icon layui-icon-component', '', 10, 1, 0, 1, 1700884194, 1697093981);
+INSERT INTO `menu` VALUES (23, 7, '物流公司', '/sys/dictionary/express', 'layui-icon layui-icon-template-1', '', 10, 1, 0, 1, 1700890565, 1700890565);
+INSERT INTO `menu` VALUES (24, 7, '省份城市', '/sys/dictionary/region', 'layui-icon layui-icon-template-1', '省份城市数据管理', 5, 1, 0, 1, 1700884433, 1700286539);
 
 -- ----------------------------
 -- Table structure for message

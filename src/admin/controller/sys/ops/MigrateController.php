@@ -69,7 +69,7 @@ class MigrateController extends Controller
                         'time'      => $v['time'],
                     ];
                 }
-                $data = Common::instance()->array_2D_Sort($data, 'time');
+                $data = Common::instance()->sortArray2D($data, 'time');
                 // 分页
                 $count = count($data);
                 $offset = $page - 1 > 0 ? (($page - 1) * $limit) : 0;
