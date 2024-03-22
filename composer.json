@@ -20,8 +20,8 @@
         "mongdch/mon-http": "^1.1",
         "mongdch/mon-think-orm": "^1.0",
         "mongdch/mon-auth-think": "^1.0",
-        "mongdch/mon-captcha": "^1.3",
-        "mongdch/mon-cache": "^1.0"
+        "mongdch/mon-cache": "^1.0",
+        "mongdch/mon-captcha": "dev-master"
     },
     "autoload": {
         "psr-4": {

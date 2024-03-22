@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "70e3d9327890bcb02e77e92a9e24f7d5",
+    "content-hash": "c65cef6ba77ca0739d4ebfde6333912e",
     "packages": [
         {
             "name": "mongdch/mon-auth-think",
@@ -114,21 +114,22 @@
         },
         {
             "name": "mongdch/mon-captcha",
-            "version": "1.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MonGDCH/mon-captcha.git",
-                "reference": "d9cea2cc16889a166295bd04706dbd9efc68ed9b"
+                "reference": "2dbbeae417ab64bd8ca27e3967c65a6f231f3b34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MonGDCH/mon-captcha/zipball/d9cea2cc16889a166295bd04706dbd9efc68ed9b",
-                "reference": "d9cea2cc16889a166295bd04706dbd9efc68ed9b",
+                "url": "https://api.github.com/repos/MonGDCH/mon-captcha/zipball/2dbbeae417ab64bd8ca27e3967c65a6f231f3b34",
+                "reference": "2dbbeae417ab64bd8ca27e3967c65a6f231f3b34",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [],
@@ -157,9 +158,9 @@
             ],
             "support": {
                 "issues": "https://github.com/MonGDCH/mon-captcha/issues",
-                "source": "https://github.com/MonGDCH/mon-captcha/tree/1.3.0"
+                "source": "https://github.com/MonGDCH/mon-captcha/tree/master"
             },
-            "time": "2023-06-14T09:54:37+00:00"
+            "time": "2024-03-22T01:54:39+00:00"
         },
         {
             "name": "mongdch/mon-http",
@@ -687,7 +688,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "mongdch/mon-captcha": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
