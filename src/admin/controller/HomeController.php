@@ -7,6 +7,7 @@ namespace plugins\admin\controller;
 use Throwable;
 use mon\util\Tree;
 use mon\env\Config;
+use mon\log\Logger;
 use mon\http\Request;
 use mon\http\Session;
 use support\auth\RbacService;
@@ -40,10 +41,15 @@ class HomeController extends Controller
         // 创建验证码
         try {
             $app = $request->get('app');
-            $img = CaptchaService::instance()->create($app);
-            return $this->view($img->getImg(), ['Content-Type' => 'image/png']);
+            $id = sha1($app . microtime(true) . $request->ip() . mt_rand(0, 1000));
+            $img = CaptchaService::instance()->create($app, $id, ['scalar', 'calcul']);
+            return $this->success('ok', [
+                'img' => $img->getBase64(),
+                'key' => $id
+            ]);
         } catch (Throwable $e) {
-            return $this->error('query faild');
+            Logger::instance()->channel()->error('Create captcha faild: ' . $e->getMessage());
+            return $this->error('create captcha faild');
         }
     }
 
@@ -62,7 +68,11 @@ class HomeController extends Controller
             if (!$captcha) {
                 return $this->error('验证码参数错误');
             }
-            if (!CaptchaService::instance()->check($captcha, 'login')) {
+            $id = $request->post('key', '');
+            if (!$captcha) {
+                return $this->error('验证码参数错误!');
+            }
+            if (!CaptchaService::instance()->check($captcha, 'login', $id)) {
                 return $this->error('验证码错误');
             }
 
