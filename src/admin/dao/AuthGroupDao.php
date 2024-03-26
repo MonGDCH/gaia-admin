@@ -7,7 +7,7 @@ namespace plugins\admin\dao;
 use Throwable;
 use mon\util\Tree;
 use mon\log\Logger;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use support\auth\RbacService;
 use plugins\admin\validate\AuthValidate;

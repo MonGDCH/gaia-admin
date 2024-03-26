@@ -6,7 +6,7 @@ namespace plugins\admin\dao;
 
 use Throwable;
 use mon\log\Logger;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use plugins\admin\validate\MenuValidate;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace plugins\admin\dao;
 
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use plugins\admin\contract\MenuEnum;
 

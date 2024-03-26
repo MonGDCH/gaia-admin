@@ -6,7 +6,7 @@ namespace plugins\admin\dao;
 
 use Throwable;
 use mon\log\Logger;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 
 /**
@@ -163,7 +163,7 @@ class CounterDao extends Dao
     /**
      * 查询列表场景
      *
-     * @param \mon\thinkOrm\extend\Query $query 查询实例
+     * @param \mon\thinkORM\extend\Query $query 查询实例
      * @param array $option  查询参数
      * @return mixed
      */

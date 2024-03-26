@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace plugins\admin\dao;
 
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use plugins\admin\validate\MessageValidate;
 
@@ -130,7 +130,7 @@ class AdminMessageDao extends Dao
     /**
      * 查询系统信息场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
@@ -146,7 +146,7 @@ class AdminMessageDao extends Dao
     /**
      * 查询用户信息场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
@@ -162,7 +162,7 @@ class AdminMessageDao extends Dao
     /**
      * 解析查询条件
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */

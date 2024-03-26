@@ -6,7 +6,7 @@ namespace plugins\admin\dao;
 
 use Throwable;
 use mon\log\Logger;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use plugins\admin\contract\MessageEnum;
 use plugins\admin\validate\MessageValidate;
@@ -297,7 +297,7 @@ class MessageDao extends Dao
     /**
      * 查询系统信息场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
@@ -314,7 +314,7 @@ class MessageDao extends Dao
     /**
      * 查询用户信息场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
@@ -332,7 +332,7 @@ class MessageDao extends Dao
     /**
      * 解析查询条件
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */

@@ -7,7 +7,7 @@ namespace plugins\admin\dao;
 use Throwable;
 use mon\log\Logger;
 use mon\util\Common;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 use plugins\admin\validate\AdminValidate;
 
@@ -349,7 +349,7 @@ class AdminDao extends Dao
     /**
      * 查询用户列表场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
@@ -405,7 +405,7 @@ class AdminDao extends Dao
     /**
      * 查询组别用户相关列表场景
      *
-     * @param \mon\thinkOrm\extend\Query $query 查询实例
+     * @param \mon\thinkORM\extend\Query $query 查询实例
      * @param array $option  查询参数
      * @return mixed
      */

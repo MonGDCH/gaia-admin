@@ -6,7 +6,7 @@ namespace plugins\admin\dao;
 
 use mon\http\Context;
 use mon\http\Request;
-use mon\thinkOrm\Dao;
+use mon\thinkORM\Dao;
 use mon\util\Instance;
 
 /**
@@ -105,7 +105,7 @@ class AdminLoginLogDao extends Dao
     /**
      * 查询列表场景
      *
-     * @param \mon\thinkOrm\extend\Query $query
+     * @param \mon\thinkORM\extend\Query $query
      * @param array $option
      * @return mixed
      */
