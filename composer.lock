@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90ebb67bd67887600e8b6b53cc1eec2a",
+    "content-hash": "aeee52d6add3255c7764b75fdf08bb56",
     "packages": [
         {
             "name": "mongdch/mon-auth-think",
-            "version": "dev-master",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MonGDCH/mon-auth-think.git",
-                "reference": "8d61fdbca7acf541fa6061a4bfa195594ea53093"
+                "reference": "0783016e31c71e5a14584fadd3393b3264d41a62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MonGDCH/mon-auth-think/zipball/8d61fdbca7acf541fa6061a4bfa195594ea53093",
-                "reference": "8d61fdbca7acf541fa6061a4bfa195594ea53093",
+                "url": "https://api.github.com/repos/MonGDCH/mon-auth-think/zipball/0783016e31c71e5a14584fadd3393b3264d41a62",
+                "reference": "0783016e31c71e5a14584fadd3393b3264d41a62",
                 "shasum": ""
             },
             "require": {
@@ -25,7 +25,6 @@
                 "mongdch/mon-util": "^1.3",
                 "php": ">=7.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -58,9 +57,9 @@
             ],
             "support": {
                 "issues": "https://github.com/MonGDCH/mon-auth-think/issues",
-                "source": "https://github.com/MonGDCH/mon-auth-think/tree/master"
+                "source": "https://github.com/MonGDCH/mon-auth-think/tree/1.0.1"
             },
-            "time": "2024-03-26T09:46:04+00:00"
+            "time": "2024-03-27T06:09:34+00:00"
         },
         {
             "name": "mongdch/mon-cache",
@@ -688,9 +687,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "mongdch/mon-auth-think": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
