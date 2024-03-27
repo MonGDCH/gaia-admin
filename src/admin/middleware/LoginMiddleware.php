@@ -7,13 +7,13 @@ namespace plugins\admin\middleware;
 use Closure;
 use mon\http\Jump;
 use mon\env\Config;
-use mon\http\Session;
+use mon\http\Context;
 use mon\http\Response;
 use plugins\admin\dao\AdminDao;
 use plugins\admin\comm\view\Template;
 use plugins\admin\contract\AdminEnum;
 use mon\http\interfaces\RequestInterface;
-use mon\http\interfaces\Middlewareinterface;
+use support\auth\middleware\JwtMiddleware;
 
 /**
  * 登录
@@ -21,10 +21,10 @@ use mon\http\interfaces\Middlewareinterface;
  * @author Mon <985558837@qq.com>
  * @version 1.0.0
  */
-class LoginMiddleware implements Middlewareinterface
+class LoginMiddleware extends JwtMiddleware
 {
     /**
-     * 中间件实现接口
+     * 中间件实现接口(重载实现)
      *
      * @param RequestInterface $request  请求实例
      * @param Closure $next 执行下一个中间件回调方法
@@ -32,60 +32,49 @@ class LoginMiddleware implements Middlewareinterface
      */
     public function process(RequestInterface $request, Closure $next): Response
     {
-        // 验证登录态
-        $sessionUserInfo = $this->getSessionUserInfo();
-        if (!$sessionUserInfo) {
+        // 获取Token，优先的请求头中获取，不存在则从cookie中获取
+        $token = $this->getToken($request);
+        if (!$token) {
+            // 未登录，跳转登录页
             $loginPage = Template::buildURL('/login');
             return Jump::instance()->redirect($loginPage);
         }
+        // 验证Token
+        $check = $this->getService()->check($token);
+        // Token验证不通过
+        if (!$check) {
+            // 错误码
+            $code = $this->getService()->getErrorCode();
+            // 错误信息
+            $msg = $this->getService()->getError();
+            return $this->getHandler()->checkError($code, $msg);
+        }
+
+        // 获取Token数据
+        $data = $this->getService()->getData();
         // 获取用户信息
-        $userInfo = AdminDao::instance()->where('id', $sessionUserInfo['id'])->where('status', AdminEnum::ADMIN_STATUS['enable'])->get();
+        $userInfo = AdminDao::instance()->where('id', $data['aud'])->where('status', AdminEnum::ADMIN_STATUS['enable'])->get();
         if (!$userInfo) {
-            Session::instance()->clear();
-            return Jump::instance()->abort(404, '您的账号已被管理员禁用，请联系管理员。');
+            return Jump::instance()->abort(401, '您的账号已被管理员禁用，请联系管理员。');
         }
         // 判断过期时间
         if ($userInfo['deadline'] > 0 && time() > $userInfo['deadline']) {
-            Session::instance()->clear();
-            return Jump::instance()->abort(403, '您的账号已过期，请联系管理员。');
+            return Jump::instance()->abort(401, '您的账号已过期，请联系管理员。');
         }
         // 单点登录
         $ssoConfig = Config::instance()->get('admin.app.sso');
-        if ($ssoConfig['enable'] && !in_array($userInfo['id'], $ssoConfig['filter']) && $userInfo['login_token'] != $sessionUserInfo['login_token']) {
-            Session::instance()->clear();
+        // dump($userInfo);
+        if ($ssoConfig['enable'] && !in_array($userInfo['id'], $ssoConfig['filter']) && $userInfo['login_token'] != $data['ext']['token']) {
             $loginPage = Template::buildURL('/login');
             return Jump::instance()->abort(401, '您的账号存在异地登录，如非本人操作请修改密码并<a href="' . $loginPage . '">重新登录</a>');
         }
 
-        // 更新session
-        $this->refreshSessionUserInfo($sessionUserInfo);
-
         // 透传用户信息
         $request->uid = $userInfo['id'];
         $request->userInfo = $userInfo;
+        $request->jwt = $data;
+        Context::set('userInfo', $userInfo);
 
         return $next($request);
-    }
-
-    /**
-     * 获取session中用户信息
-     *
-     * @return array
-     */
-    public function getSessionUserInfo(): array
-    {
-        $key = Config::instance()->get('admin.app.login_key', 'admin_info');
-        return Session::instance()->get($key, []);
-    }
-
-    /**
-     * 刷新session中用户信息
-     *
-     * @param array $userInfo
-     * @return void
-     */
-    public function refreshSessionUserInfo(array $userInfo)
-    {
-        Session::instance()->set(Config::instance()->get('admin.app.login_key', 'admin_info'), $userInfo);
     }
 }

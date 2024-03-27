@@ -334,6 +334,7 @@ layui.define(['layer', 'token', 'axios'], function (exports) {
                             icon: 2,
                             closeBtn: 0,
                             yes: function (index, layero, that) {
+                                Token.clearToken()
                                 // 关闭弹层
                                 Layer.close(index);
                                 // 跳转登录页

@@ -63,3 +63,22 @@ footer {
 	height: 60px;
 	line-height: 60px;
 }
+
+#captcha {
+	margin-left: 10px;
+	display: none;
+}
+
+#loading-captcha {
+	margin-left: 10px;
+	width: 122px;
+	height: 37px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#loading-captcha>i {
+	font-size: 24px;
+	color: #3492ed;
+}

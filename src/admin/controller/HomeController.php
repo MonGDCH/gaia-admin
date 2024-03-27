@@ -9,7 +9,6 @@ use mon\util\Tree;
 use mon\env\Config;
 use mon\log\Logger;
 use mon\http\Request;
-use mon\http\Session;
 use support\auth\RbacService;
 use plugins\admin\dao\MenuDao;
 use plugins\admin\dao\FilesDao;
@@ -81,16 +80,17 @@ class HomeController extends Controller
             if (!$userInfo) {
                 return $this->error(AdminService::instance()->getError());
             }
-            // 保存登录态        
-            Session::instance()->set(Config::instance()->get('admin.app.login_key'), $userInfo);
 
-            return $this->success('ok', ['index' => Template::buildURL('/')]);
+            return $this->success('ok', [
+                'index' => Template::buildURL('/'),
+                'token' => AdminService::instance()->getToken($userInfo, $request->ip())
+            ]);
         }
 
-        // 清除用户登录态
-        Session::instance()->clear();
         // 页面配置
         $data = DictService::instance()->get('web', '', []);
+        $key = Config::instance()->get('admin.page.jwt.tokenName', 'Mon-Auth-Token');
+        $this->assign('key', $key);
         // 登录页
         return $this->fetch('login', $data);
     }

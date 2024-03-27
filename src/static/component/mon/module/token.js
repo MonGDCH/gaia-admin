@@ -1,13 +1,11 @@
-layui.define(['storage', 'jwt_decode'], function (exports) {
+layui.define(['storage', 'cookie', 'jwt_decode'], function (exports) {
     'use strict';
 
     const MODULE_NAME = 'token'
 
-    // 缓存
+    const cookie = layui.cookie
     const storage = layui.storage
     const jwt_decode = layui.jwt_decode
-    // 缓存中token键名
-    const storage_token_name = 'x-mon-token'
 
     /**
      * token统一管理
@@ -15,14 +13,36 @@ layui.define(['storage', 'jwt_decode'], function (exports) {
     class Token {
         // 构造方法
         constructor() {
+            this.key = this.getKey()
+            this.init()
+        }
+
+        // 初始化数据
+        init() {
             // token数据
-            this.token = storage.get(storage_token_name, '')
+            this.token = storage.get(this.key, '')
             this.data = this.parseToken(this.token);
+        }
+
+        // 获取key名
+        getKey() {
+            // 系统配置
+            const adminConfig = JSON.parse(sessionStorage.getItem('adminConfig')) || {};
+            const jwtConfig = adminConfig.jwt || {}
+            // 缓存中token键名
+            return jwtConfig.tokenName || 'Mon-Auth-Token'
+        }
+
+        // 设置key数据
+        setKey(key) {
+            this.key = key
+            this.init()
         }
 
         // 设置token
         setToken(token) {
-            storage.set(storage_token_name, token)
+            storage.set(this.key, token)
+            cookie.set(this.key, token)
             this.token = token
             this.data = this.parseToken(token)
         }
@@ -36,7 +56,8 @@ layui.define(['storage', 'jwt_decode'], function (exports) {
         clearToken() {
             this.data = {}
             this.token = ''
-            storage.remove(storage_token_name)
+            storage.remove(this.key)
+            cookie.remove(this.key)
         }
 
         // 获取token数据
@@ -93,7 +114,6 @@ layui.define(['storage', 'jwt_decode'], function (exports) {
             const refreshTime = iat + expTime
             return now > refreshTime
         }
-
     }
 
     exports(MODULE_NAME, new Token)

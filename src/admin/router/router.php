@@ -85,6 +85,8 @@ Route::instance()->group(Config::instance()->get('admin.app.root_path', ''), fun
             $route->post('/editInfo', [ProfileController::class, 'editInfo']);
             // 修改密码
             $route->map(['GET', 'POST'], '/password', [ProfileController::class, 'password']);
+            // 刷新Token
+            $route->post('/refresh', [ProfileController::class, 'refresh']);
         });
 
         // 系统管理

@@ -8,8 +8,8 @@ use Throwable;
 use mon\env\Config;
 use mon\log\Logger;
 use think\facade\Db;
-use mon\util\Common;
 use mon\util\Instance;
+use support\auth\JwtService;
 use plugins\admin\dao\AdminDao;
 use plugins\admin\contract\AdminEnum;
 use plugins\admin\dao\AdminLoginLogDao;
@@ -80,14 +80,14 @@ class AdminService
         }
 
         // 定义登陆token
-        $rand_key = Common::instance()->randString();
-        $login_token = md5($rand_key . $ip . microtime() . $userInfo['username']);
+        $login_time = time();
+        $login_token = md5(mt_rand(0, 9999) . $ip . microtime() . $userInfo['username']);
         Db::startTrans();
         try {
             Logger::instance()->channel()->info('User login');
             $saveLogin = AdminDao::instance()->where('id', $userInfo['id'])->save([
-                'login_time'    => time(),
                 'login_ip'      => $ip,
+                'login_time'    => $login_time,
                 'login_token'   => $login_token
             ]);
             if (!$saveLogin) {
@@ -96,8 +96,8 @@ class AdminService
                 return [];
             }
 
-            $userInfo['login_time'] = time();
             $userInfo['login_ip'] = $ip;
+            $userInfo['login_time'] = $login_time;
             $userInfo['login_token'] = $login_token;
 
             // 记录登录日志
@@ -121,6 +121,21 @@ class AdminService
             Logger::instance()->channel()->error('admin login exception, msg => ' . $e->getMessage());
             return [];
         }
+    }
+
+    /**
+     * 获取用户token
+     *
+     * @param array  $userInfo  用户信息
+     * @param string $ip        用户IP
+     * @return string
+     */
+    public function getToken(array $userInfo, string $ip): string
+    {
+        return JwtService::instance()->create($userInfo['id'], [
+            'ip'    => $ip,
+            'token' => $userInfo['login_token'],
+        ]);
     }
 
     /**

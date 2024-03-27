@@ -123,9 +123,10 @@
 	<script src="<?=$this->assets('static/component/mon/mon.js')?>"></script>
 	<!-- 框 架 初 始 化 -->
 	<script>
-		layui.use(['admin', 'http'], async function () {
+		layui.use(['admin', 'http', 'token'], async function () {
 			const admin = layui.admin
 			const http = layui.http
+			const token = layui.token
 			// 加载配置
 			const config = await http.ajax({
 				url: '<?=$this->url("/index")?>' + '?isApi=1&v=' + Math.random(),
@@ -139,6 +140,7 @@
 			// 登出逻辑 
 			admin.logout(function () {
 				layer.confirm('确认注销登录么？', { icon: 3, title: 'Tips' }, async function (index) {
+					token.clearToken()
 					// 关闭弹窗
 					layer.close(index)
 					// 打开loading，防止误触

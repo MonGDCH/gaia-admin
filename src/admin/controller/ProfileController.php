@@ -10,6 +10,7 @@ use plugins\admin\dao\AdminLogDao;
 use plugins\admin\comm\Controller;
 use plugins\admin\model\AdminLogModel;
 use plugins\admin\dao\AdminLoginLogDao;
+use plugins\admin\service\AdminService;
 
 /**
  * 当前管理员控制器
@@ -115,5 +116,17 @@ class ProfileController extends Controller
         $data['uid'] = $request->uid;
         $result = AdminLogDao::instance()->getList($data);
         return $this->success('ok', $result['list'], ['count' => $result['count']]);
+    }
+
+    /**
+     * 刷新Token
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function refresh(Request $request)
+    {
+        $token = AdminService::instance()->getToken($request->userInfo, $request->ip());
+        return $this->success('ok', ['token' => $token]);
     }
 }

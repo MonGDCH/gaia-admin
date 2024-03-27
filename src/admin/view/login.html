@@ -23,25 +23,6 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-
-        #captcha {
-            margin-left: 10px;
-            display: none;
-        }
-
-        #loading-captcha {
-            margin-left: 10px;
-            width: 122px;
-            height: 37px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #loading-captcha>i {
-            font-size: 24px;
-            color: #3492ed;
-        }
     </style>
 </head>
 
@@ -123,10 +104,11 @@
     <script src="<?=$this->assets('static/component/layui/layui.js')?>"></script>
     <script src="<?=$this->assets('static/component/mon/mon.js')?>"></script>
     <script>
-        layui.use(['form', 'button', 'http'], async function () {
+        layui.use(['form', 'button', 'http', 'token'], async function () {
             const form = layui.form;
             const button = layui.button;
             const http = layui.http
+            const token = layui.token
 
             // 获取验证码
             async function getCaptcha() {
@@ -155,7 +137,10 @@
                 captcha.style.display = 'inline';
             }
 
-            // 初始化
+            // Token初始化
+            token.setKey("<?=$this->get('key')?>")
+            token.clearToken()
+            // 验证码初始化
             await getCaptcha()
 
             // 刷新验证码
@@ -201,6 +186,7 @@
                     if (response.code == 1) {
                         // 成功跳转
                         layer.msg('登录成功', { icon: 1, time: 1200 }, function () {
+                            token.setToken(response.data.token)
                             window.location.href = response.data.index;
                         })
 

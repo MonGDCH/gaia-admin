@@ -49,6 +49,8 @@ layui.config({
     print: 'mon/module/print',
     // 缓存
     storage: 'mon/module/storage',
+    // cookie
+    cookie: 'mon/module/cookie',
     // 通知
     toast: 'mon/module/toast',
     // jwt_decode
@@ -132,9 +134,21 @@ layui.config({
     cropper: "pear/module/cropper",
     // 页面加水印
     watermark: 'pear/module/watermark'
-}).use(['layer', 'util'], function () {
+}).use(['jquery', 'layer', 'util', 'token'], function () {
+    const $ = layui.jquery
     const layer = layui.layer
     const util = layui.util
+    const token = layui.token
+
+    // 系统配置
+    const adminConfig = JSON.parse(sessionStorage.getItem('adminConfig')) || {};
+    const jwtConfig = adminConfig.jwt || {}
+    // 缓存中token键名
+    const token_name = jwtConfig.tokenName || 'Mon-Auth-Token'
+    // jquery全局支持token
+    $.ajaxSetup({
+        headers: { token_name: token.getToken() }
+    })
     // 暴露layer
     window.layer = layer
     // 绑定全局事件

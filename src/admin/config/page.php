@@ -36,7 +36,7 @@ return [
         // 浏览器刷新时是否预加载非激活标签页
         "preload"   => false,
         // 可打开的数量, false 不限制极值
-        "max"       => "30",
+        "max"       => "20",
         // 首页
         "index"     => [
             // 标识 ID , 建议与菜单项中的 ID 一致
@@ -75,14 +75,10 @@ return [
         // 页脚
         "footer"    => false
     ],
-    "header" => [
-        // 站内消息，通过 false 设置关闭
-        "message"   => false
-    ],
     'jwt' => [
         // 是否启用jwt权限控制
-        'enable'        => false,
-        // 缓存请求头名称
+        'enable'        => true,
+        // 缓存请求头名称，需要与jwt权限配置一致
         'tokenName'     => 'Mon-Auth-Token',
         // Token刷新URL
         'refreshURL'    => '/admin/profile/refresh',
