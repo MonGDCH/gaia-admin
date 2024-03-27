@@ -14,12 +14,12 @@ use plugins\admin\dao\MenuDao;
 use plugins\admin\dao\FilesDao;
 use plugins\admin\dao\FastMenuDao;
 use plugins\admin\comm\Controller;
-use support\captcha\CaptchaService;
 use plugins\admin\contract\MenuEnum;
 use plugins\admin\comm\view\Template;
 use plugins\admin\service\DictService;
 use plugins\admin\service\AdminService;
 use plugins\admin\service\UploadService;
+use plugins\admin\service\CaptchaService;
 
 /**
  * 首页

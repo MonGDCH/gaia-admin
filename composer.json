@@ -26,6 +26,9 @@
     "autoload": {
         "psr-4": {
             "gaia\\admin\\": "src/"
-        }
+        },
+        "files": [
+            "src/support.php"
+        ]
     }
 }

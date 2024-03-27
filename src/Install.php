@@ -86,6 +86,14 @@ class Install
         }
 
         // 联动发布验相关扩展库
-        // \mon\cache\Install::publish();
+        if (!class_exists(\support\cache\CacheService::class)) {
+            \mon\cache\Install::publish();
+        }
+        if (!class_exists(\support\captcha\CaptchaService::class)) {
+            \mon\captcha\Install::publish();
+        }
+        if (!class_exists(\support\auth\JwtService::class)) {
+            \mon\auth\Install::publish();
+        }
     }
 }
