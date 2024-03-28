@@ -10,7 +10,7 @@ layui.define([], function (exports) {
             let expires = 604800000
             let exp = new Date();
             exp.setTime(exp.getTime() + expires);
-            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString() + ';path=/';
         },
         // 获取cookie
         get: function (name) {
