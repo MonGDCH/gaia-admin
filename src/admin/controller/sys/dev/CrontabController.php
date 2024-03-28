@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace plugins\admin\controller\sys\dev;
 
 use Throwable;
+use mon\env\Config;
 use mon\http\Request;
 use gaia\crontab\CrontabEnum;
 use plugins\admin\dao\CrontabDao;
@@ -35,6 +36,8 @@ class CrontabController extends Controller
             return $this->success('ok', $result['list'], ['count' => $result['count']]);
         }
 
+        $this->assign('driver', Config::instance()->get('crontab.app.driver'));
+        $this->assign('allowOper', Config::instance()->get('crontab.app.driver') != \gaia\crontab\driver\Job::class);
         $this->assign('type', CrontabEnum::TASK_TYPE_TITLE);
         $this->assign('status', CrontabEnum::TASK_STATUS_TITLE);
         $this->assign('typeList', json_encode(CrontabEnum::TASK_TYPE_TITLE, JSON_UNESCAPED_UNICODE));
@@ -59,21 +62,22 @@ class CrontabController extends Controller
             if (!$task_id) {
                 return $this->error(CrontabDao::instance()->getError());
             }
+            $reload = false;
             $msg = '操作成功';
             // 启动任务
-            if ($option['status'] == CrontabEnum::TASK_STATUS['enable']) {
+            if ($option['status'] == CrontabEnum::TASK_STATUS['enable'] && Config::instance()->get('crontab.app.driver') != \gaia\crontab\driver\Job::class) {
                 try {
                     $reload = CrontabService::instance()->reload([$task_id]);
                 } catch (Throwable $e) {
                     $reload = false;
                 }
-                $msg .= $reload ? '，任务已启动，下一分钟开始生效' : '，任务启动失败，请手动重载任务';
             }
+            $msg .= $reload ? '，任务已启动，下一分钟开始生效' : '，任务启动失败，请手动重载任务';
 
             return $this->success($msg);
         }
 
-        $this->assign('urlType', CrontabEnum::TASK_TYPE['url']);
+        $this->assign('urlType', CrontabEnum::TASK_TYPE['http']);
         $this->assign('log', CrontabEnum::TASK_LOG_TITLE);
         $this->assign('type', CrontabEnum::TASK_TYPE_TITLE);
         $this->assign('status', CrontabEnum::TASK_STATUS_TITLE);
@@ -98,12 +102,15 @@ class CrontabController extends Controller
                 return $this->error(CrontabDao::instance()->getError());
             }
 
+            $reload = false;
             $msg = '操作成功';
             // 重启任务
-            try {
-                $reload = CrontabService::instance()->reload([$option['idx']]);
-            } catch (Throwable $e) {
-                $reload = false;
+            if (Config::instance()->get('crontab.app.driver') != \gaia\crontab\driver\Job::class) {
+                try {
+                    $reload = CrontabService::instance()->reload([$option['idx']]);
+                } catch (Throwable $e) {
+                    $reload = false;
+                }
             }
 
             $msg .= $reload ? '，任务已重载，下一分钟开始生效' : '，任务重载失败，请手动重载任务';
@@ -126,7 +133,7 @@ class CrontabController extends Controller
         $method = '';
         $header = [];
         $queryData = [];
-        if ($data['type'] == CrontabEnum::TASK_TYPE['url']) {
+        if ($data['type'] == CrontabEnum::TASK_TYPE['http']) {
             $method = $params['method'] ?? 'GET';
             if (isset($params['header']) && is_array($params['header']) && !empty($params['header'])) {
                 foreach ($params['header'] as $k => $v) {
@@ -148,7 +155,7 @@ class CrontabController extends Controller
         $this->assign('method', $method);
         $this->assign('header', json_encode($header, JSON_UNESCAPED_UNICODE));
         $this->assign('queryData', json_encode($queryData, JSON_UNESCAPED_UNICODE));
-        $this->assign('urlType', CrontabEnum::TASK_TYPE['url']);
+        $this->assign('urlType', CrontabEnum::TASK_TYPE['http']);
         $this->assign('log', CrontabEnum::TASK_LOG_TITLE);
         $this->assign('type', CrontabEnum::TASK_TYPE_TITLE);
         $this->assign('status', CrontabEnum::TASK_STATUS_TITLE);

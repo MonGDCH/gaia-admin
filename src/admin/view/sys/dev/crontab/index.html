@@ -34,7 +34,11 @@
 <blockquote class="layui-elem-quote layui-bg-white layui-font-13">
     <div class="layui-font-red">定时任务的启用、停止、重载都是在下一分钟才会生效！</div>
     <div class="layui-font-red">启动中的定时任务除修改“备注信息”外，修改其它内容都是在下一分钟才会生效！</div>
+    <div>当前定时任务驱动类型：<?=$this->get('driver')?></div>
     <div>当前定时任务运行状态： <span id="status"><i class="layui-icon layui-icon-help"></i></span> </div>
+    <?php if(!$allowOper): ?>
+    <div>注意：任务驱动为 <strong class="layui-font-red">Job</strong> ，不支持动态操作定时任务</div>
+    <?php endif; ?>
 </blockquote>
 
 <div class="layui-card">
@@ -47,7 +51,7 @@
 <!-- 表格操作栏 -->
 <script type="text/html" id="toolbar">
     <?= $this->build_toolbar('/sys/dev/crontab', $uid, ['add', 'search', 'reset']); ?>
-    <?php if($this->checkAuth('/sys/dev/crontab/edit', $uid)): ?>
+    <?php if($this->checkAuth('/sys/dev/crontab', $uid)): ?>
         <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="pool">查看运行任务</button>
     <?php endif; ?>
 </script>
@@ -55,7 +59,7 @@
 <!-- 操作 -->
 <script type="text/html" id="operate">
     <div class="oper-btns">
-        <?php if($this->checkAuth('/sys/dev/crontab/reload', $uid)): ?>
+        <?php if($this->checkAuth('/sys/dev/crontab/reload', $uid) && $allowOper): ?>
         <button type="button" class="layui-btn layui-bg-orange layui-btn-xs" lay-event="reload">重载任务</button>
         <?php endif; ?>
         <?php if($this->checkAuth('/sys/dev/crontab/edit', $uid)): ?>
@@ -144,13 +148,13 @@
                     layer.open({
                         type: 1,
                         title: `运行中的任务`,
-                        area: ['680', '540px'],
+                        area: ['640px', '540px'],
                         content: '<div style="padding: 0 12px"><table id="task-table"></table></div>',
                         shadeClose: true,
                         moveOut: true,
                         scrollbar: false,
                         resize: false,
-                        maxHeight: 480,
+                        maxHeight: 640,
                         success: function (layero, index) {
                             mTable.render({
                                 id: 'task-table',
@@ -161,7 +165,8 @@
                                     { field: 'id', title: 'ID', width: 60, align: 'center' },
                                     { field: 'type', title: '任务类型', width: 120, align: 'center', templet: d => typeList[d.type] || '未知' },
                                     { field: 'title', title: '名称', width: 180 },
-                                    { field: 'create_time', title: '创建时间', minWidth: 160, align: 'center' },
+                                    { field: 'last_running_time', title: '最近运行', minWidth: 160, align: 'center' },
+                                    { field: 'running_times', title: '运行次数', align: 'center' },
                                 ]]
                             })
 

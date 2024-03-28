@@ -56,12 +56,11 @@ class InitCommand extends Command
         Db::setConfig(Config::instance()->get('database', []));
         $out->block('Installation bootstrap');
         $out->spinBegiin();
-        foreach ($sqls as $sql) {
+        foreach ($sqls as $i => $sql) {
             Db::execute($sql);
-            if ($i % 10 == 0) {
+            if ($i % 5 == 0) {
                 $out->spin();
             }
-            // $out->block('Exec sql: ' . $sql, 'SUCCESS');
         }
 
         $out->spinEnd();
