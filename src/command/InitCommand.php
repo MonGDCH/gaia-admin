@@ -54,9 +54,17 @@ class InitCommand extends Command
         $sqls = Sql::instance()->parseFile($file);
         // 执行sql
         Db::setConfig(Config::instance()->get('database', []));
+        $out->block('Installation bootstrap');
+        $out->spinBegiin();
         foreach ($sqls as $sql) {
             Db::execute($sql);
-            $out->block('Exec sql: ' . $sql, 'SUCCESS');
+            if ($i % 10 == 0) {
+                $out->spin();
+            }
+            // $out->block('Exec sql: ' . $sql, 'SUCCESS');
         }
+
+        $out->spinEnd();
+        $out->block('Installation done!', 'SUCCESS');
     }
 }
