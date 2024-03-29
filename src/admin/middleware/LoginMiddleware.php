@@ -43,6 +43,11 @@ class LoginMiddleware extends JwtMiddleware
         $check = $this->getService()->check($token);
         // Token验证不通过
         if (!$check) {
+            if (!$request->isAjax()) {
+                // 普通请求，token无效，跳转登录页
+                $loginPage = Template::buildURL('/login');
+                return Jump::instance()->redirect($loginPage);
+            }
             // 错误码
             $code = $this->getService()->getErrorCode();
             // 错误信息
@@ -55,18 +60,17 @@ class LoginMiddleware extends JwtMiddleware
         // 获取用户信息
         $userInfo = AdminDao::instance()->where('id', $data['aud'])->where('status', AdminEnum::ADMIN_STATUS['enable'])->get();
         if (!$userInfo) {
-            return Jump::instance()->abort(401, '您的账号已被管理员禁用，请联系管理员。');
+            return Jump::instance()->abort(403, '您的账号已被管理员禁用，请联系管理员。');
         }
         // 判断过期时间
         if ($userInfo['deadline'] > 0 && time() > $userInfo['deadline']) {
-            return Jump::instance()->abort(401, '您的账号已过期，请联系管理员。');
+            return Jump::instance()->abort(403, '您的账号已过期，请联系管理员。');
         }
         // 单点登录
         $ssoConfig = Config::instance()->get('admin.app.sso');
-        // dump($userInfo);
         if ($ssoConfig['enable'] && !in_array($userInfo['id'], $ssoConfig['filter']) && $userInfo['login_token'] != $data['ext']['token']) {
             $loginPage = Template::buildURL('/login');
-            return Jump::instance()->abort(401, '您的账号存在异地登录，如非本人操作请修改密码并<a href="' . $loginPage . '">重新登录</a>');
+            return Jump::instance()->abort(403, '您的账号存在异地登录，如非本人操作请修改密码并<a href="' . $loginPage . '">重新登录</a>');
         }
 
         // 透传用户信息
