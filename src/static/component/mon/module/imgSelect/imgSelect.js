@@ -26,23 +26,23 @@ layui.define(['laypage', 'http', 'mUpload'], function (exports) {
 
     // 基础模板
     const tpl = `<div id="chooseimg">
-                    <div class="img-select-oper">
-                        <div class="layui-input-group">
-                            <input type="text" id="img-select-search-filename" placeholder="图片名称" class="layui-input" lay-affix="clear">
-                            <div class="layui-input-suffix">
-                                <button class="layui-btn layui-btn-primary" id="img-select-search-btn">搜索</button>
-                                <button type="button" class="layui-btn layui-btn-primary" id="img-select-upload">上传图片</button>
+                        <div class="img-select-oper">
+                            <div class="layui-input-group">
+                                <input type="text" id="img-select-search-filename" placeholder="图片名称" class="layui-input" lay-affix="clear">
+                                <div class="layui-input-suffix">
+                                    <button class="layui-btn layui-btn-primary" id="img-select-search-btn">搜索</button>
+                                    <button type="button" class="layui-btn layui-btn-primary" id="img-select-upload">上传图片</button>
+                                </div>
                             </div>
+                            <button class="layui-btn layui-bg-blue" id="img-select-success">使用选中图片</button>
                         </div>
-                        <button class="layui-btn layui-bg-blue" id="img-select-success">使用选中图片</button>
-                    </div>
-                    <div class="img-select-container">
-                        <ul id="img-select-list" class="img-select-list"></ul>
-                    </div>
-                    <div class="img-select-page">
-                        <div id="img-select-page"></div>
-                    </div>
-                </div>`
+                        <div class="img-select-container">
+                            <ul id="img-select-list" class="img-select-list"></ul>
+                        </div>
+                        <div class="img-select-page">
+                            <div id="img-select-page"></div>
+                        </div>
+                    </div>`
 
     const imgSelect = {
         // leyer弹窗ID
@@ -72,6 +72,7 @@ layui.define(['laypage', 'http', 'mUpload'], function (exports) {
             }
 
             imgSelect.LayerID = layer.open({
+                id: 'mon-img-select',
                 type: 1,
                 title: '图片选择',
                 area: ['680px', '510px'],
@@ -79,6 +80,8 @@ layui.define(['laypage', 'http', 'mUpload'], function (exports) {
                 shadeClose: true,
                 content: tpl,
                 success: function (layero, index) {
+                    // 调整弹窗位置
+                    layero[0].style.top = (layero[0].style.top.substr(0, layero[0].style.top.length - 2) - 30) + 'px'
                     // 获取数据，进行渲染
                     imgSelect.getDataRender(api, 1);
                     // 搜索
@@ -165,9 +168,9 @@ layui.define(['laypage', 'http', 'mUpload'], function (exports) {
             if (data.length > 0) {
                 let html = data.map(item => {
                     return `<li class="img-select-item" data-url="${item.url}" data-name="${item.filename}" title="${item.filename}">
-                                <img src="${item.url}" alt="${item.filename}">
-                                <div class="img-select-item-badge">&#10003</div>
-                            </li>`
+                                    <img src="${item.url}" alt="${item.filename}">
+                                    <div class="img-select-item-badge">&#10003</div>
+                                </li>`
                 })
 
                 document.querySelector('#img-select-list').innerHTML = html.join('')
